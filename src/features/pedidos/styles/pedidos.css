@@ -1,0 +1,30 @@
+.filtro{
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding-right: 24px;
+    padding: 24px;
+}
+
+.filtro select {
+    padding: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    color: #333;
+}
+
+.buscador{
+    flex: 1;
+    display: flex;
+    gap: 8px;
+}
+
+.buscador input {
+    flex: 1;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    color: #333;
+}
