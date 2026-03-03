@@ -8,6 +8,7 @@ import './styles/CategoriasPage.css';
 import Filtros from './components/Filtros';
 import Card from '../../shared/components/Card';
 import TableCategorias from './components/TableCategorias';
+import H1 from '../../shared/components/H1';
 
 export const CategoriasPage: React.FC = () => {
   const {
@@ -43,7 +44,7 @@ export const CategoriasPage: React.FC = () => {
     <Page>
       <div className="page-header">
         <div>
-          <h1 className="page-title">Categorías</h1>
+          <H1 texto="Categorías" />
           <p className="page-subtitle">Gestiona las categorías de productos</p>
         </div>
         <button className="btn-primary" onClick={handleNuevaCategoria}>

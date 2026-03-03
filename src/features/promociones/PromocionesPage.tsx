@@ -8,6 +8,7 @@ import { getProductosActivos } from '../productos/services/productoService';
 import { useToast } from '../../shared/hooks/useToast';
 import Page from '../../shared/components/Page';
 import Card from '../../shared/components/Card';
+import H1 from '../../shared/components/H1';
 
 export const PromocionesPage: React.FC = () => {
     const {
@@ -29,7 +30,7 @@ export const PromocionesPage: React.FC = () => {
         <Page>
             <div className="page-header">
                 <div>
-                    <h1 className="page-title">Promociones</h1>
+                    <H1 texto="Teléfonos" />
                     <p className="page-subtitle">Crea y administra promociones</p>
                 </div>
                 <button className="btn-primary" onClick={modalCrearPromocion.open}>+ Nueva Promoción</button>
@@ -111,11 +112,11 @@ export const PromocionesPage: React.FC = () => {
             </Card>
 
             {/* Modales */}
-            <ModalCrearPromocion 
+            <ModalCrearPromocion
                 productos={productosActivos}
                 showWarning={showWarning}
             />
-            <ModalVerPromocion 
+            <ModalVerPromocion
                 productosCatalogo={productosActivos}
             />
         </Page>

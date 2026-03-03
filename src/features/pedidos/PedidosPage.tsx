@@ -6,6 +6,10 @@ import { EstadoPedido } from '../../core/types';
 import CargandoPage from '../../shared/components/CargandoPage';
 import Page from '../../shared/components/Page';
 import Card from '../../shared/components/Card';
+import { getEstadoBadgeClass, getEstadoTexto } from './services/pedidoService';
+import BotonEstado from './components/BotonEstado';
+import { AceptarIcon, CancelarIcon, EntregarIcon } from './components/Iconos';
+import H1 from '../../shared/components/H1';
 
 export const PedidosPage: React.FC = () => {
   const {
@@ -51,51 +55,14 @@ export const PedidosPage: React.FC = () => {
     }
   };
 
-  const getEstadoBadgeClass = (estado: EstadoPedido) => {
-    const clases = {
-      RECIBIDO: 'status-badge-pedido recibido',
-      ACEPTADO: 'status-badge-pedido aceptado',
-      ENTREGADO: 'status-badge-pedido entregado',
-      CANCELADO: 'status-badge-pedido cancelado',
-    };
-    return clases[estado];
-  };
-
-  const getEstadoTexto = (estado: EstadoPedido) => {
-    const textos = {
-      RECIBIDO: 'Recibido',
-      ACEPTADO: 'Aceptado',
-      ENTREGADO: 'Entregado',
-      CANCELADO: 'Cancelado',
-    };
-    return textos[estado];
-  };
-
   const getBotonesAccion = (pedido: any) => {
     const { id_pedido, estado } = pedido;
 
     if (estado === 'RECIBIDO') {
       return (
         <>
-          <button
-            className="btn-sm btn-success"
-            onClick={() => handleCambiarEstado(id_pedido, 'ACEPTADO')}
-            title="Aceptar pedido"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <polyline points="20 6 9 17 4 12"></polyline>
-            </svg>
-          </button>
-          <button
-            className="btn-sm btn-danger"
-            onClick={() => handleCambiarEstado(id_pedido, 'CANCELADO')}
-            title="Cancelar pedido"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-          </button>
+          <BotonEstado onClick={() => handleCambiarEstado(id_pedido, 'ACEPTADO')} id_pedido={id_pedido} clase="success" icon={<AceptarIcon />} />
+          <BotonEstado onClick={() => handleCambiarEstado(id_pedido, 'CANCELADO')} id_pedido={id_pedido} clase="danger" icon={<CancelarIcon />}/>
         </>
       );
     }
@@ -103,26 +70,8 @@ export const PedidosPage: React.FC = () => {
     if (estado === 'ACEPTADO') {
       return (
         <>
-          <button
-            className="btn-sm btn-primary"
-            onClick={() => handleCambiarEstado(id_pedido, 'ENTREGADO')}
-            title="Marcar como entregado"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-              <polyline points="22 4 12 14.01 9 11.01"></polyline>
-            </svg>
-          </button>
-          <button
-            className="btn-sm btn-danger"
-            onClick={() => handleCambiarEstado(id_pedido, 'CANCELADO')}
-            title="Cancelar pedido"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-          </button>
+          <BotonEstado onClick={() => handleCambiarEstado(id_pedido, 'ENTREGADO')} id_pedido={id_pedido} clase="primary" icon={<EntregarIcon />}/>
+          <BotonEstado onClick={() => handleCambiarEstado(id_pedido, 'CANCELADO')} id_pedido={id_pedido} clase="danger" icon={<CancelarIcon />}/>
         </>
       );
     }
@@ -140,7 +89,7 @@ export const PedidosPage: React.FC = () => {
     <Page>
       <div className="page-header">
         <div>
-          <h1 className="page-title">Pedidos</h1>
+          <H1 texto="Pedidos" />
           <p className="page-subtitle">Gestiona los pedidos de clientes</p>
         </div>
         <button className="btn-secondary" onClick={handleAutoCancelar}>

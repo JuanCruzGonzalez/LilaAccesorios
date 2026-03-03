@@ -6,6 +6,9 @@ import { Pagination } from '../../shared/components/Pagination';
 import { ModalNuevoProducto } from './components/ModalNuevoProducto';
 import { ModalActualizarStock } from './components/ModalActualizarStock';
 import { useCategorias } from '../categorias/context/CategoriasContext';
+import Page from '../../shared/components/Page';
+import Card from '../../shared/components/Card';
+import H1 from '../../shared/components/H1';
 
 export const AccesoriosPage: React.FC = () => {
   const {
@@ -52,10 +55,10 @@ export const AccesoriosPage: React.FC = () => {
   }, [productos, statusFilter]);
 
   return (
-    <div className="page">
+    <Page>
       <div className="page-header">
         <div>
-          <h1 className="page-title">Accesorios</h1>
+          <H1 texto="Accesorios" />
           <p className="page-subtitle">Administra tu catálogo de accesorios</p>
         </div>
         <button className="btn-primary" onClick={() => modalNuevoProducto.open()}>
@@ -98,7 +101,7 @@ export const AccesoriosPage: React.FC = () => {
         pageSize={PAGE_SIZE}
         onPageChange={loadProductosPage}
       />
-      <div className="card">
+      <Card>
         <div className="table-wrapper">
           <table className="table">
             <thead>
@@ -202,7 +205,7 @@ export const AccesoriosPage: React.FC = () => {
             </tbody>
           </table>
         </div>
-      </div>
+      </Card>
       <Pagination
         currentPage={productosPageNum}
         totalItems={productosTotal}
@@ -215,6 +218,6 @@ export const AccesoriosPage: React.FC = () => {
         categorias={categorias}
       />
       <ModalActualizarStock />
-    </div>
+    </Page>
   );
 };

@@ -293,3 +293,23 @@ export async function getMetricasPedidosHoy() {
     tasaConversion: total > 0 ? (entregados / total) * 100 : 0,
   };
 }
+
+export const getEstadoBadgeClass = (estado: EstadoPedido) => {
+  const clases = {
+    RECIBIDO: 'status-badge-pedido recibido',
+    ACEPTADO: 'status-badge-pedido aceptado',
+    ENTREGADO: 'status-badge-pedido entregado',
+    CANCELADO: 'status-badge-pedido cancelado',
+  };
+  return clases[estado];
+};
+
+  export const getEstadoTexto = (estado: EstadoPedido) => {
+    const textos = {
+      RECIBIDO: 'Recibido',
+      ACEPTADO: 'Aceptado',
+      ENTREGADO: 'Entregado',
+      CANCELADO: 'Cancelado',
+    };
+    return textos[estado];
+  };

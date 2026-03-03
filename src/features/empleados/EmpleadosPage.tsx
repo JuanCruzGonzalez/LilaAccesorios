@@ -8,6 +8,7 @@ import { useState } from 'react';
 import ModalEmpleado from './components/ModalEmpleado';
 import { Empleado } from '../../core/types';
 import Page from '../../shared/components/Page';
+import H1 from '../../shared/components/H1';
 
 const EmpleadosPage: React.FC = () => {
   const { user } = useAuth();
@@ -27,7 +28,7 @@ const EmpleadosPage: React.FC = () => {
   return (
     <Page>
       <div className='page-header flex '>
-        <h2 className='tituloEmpleados'>Empleados</h2>
+        <H1 texto='Empleados' />
         <button
           className='nuevoEmpleadoBtn'
           onClick={handleNuevoEmpleado}

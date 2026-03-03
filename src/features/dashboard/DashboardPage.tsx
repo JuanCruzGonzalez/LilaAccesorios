@@ -11,6 +11,7 @@ import PedidosPendientes from './componentes/PedidosPendientes';
 import StockCritico from './componentes/StockCritico';
 import ProductosMes from './componentes/ProductosMes';
 import UltimasVentas from './componentes/UltimasVentas';
+import H1 from '../../shared/components/H1';
 
 export const DashboardPage: React.FC = () => {
   const {
@@ -61,7 +62,7 @@ export const DashboardPage: React.FC = () => {
 
       <div className="dashboard-header">
         <div>
-          <h1>Dashboard</h1>
+          <H1 texto="Dashboard" />
           <p>Resumen general del negocio</p>
         </div>
         <span className="dashboard-badge-mes">{getNombreMes()}</span>

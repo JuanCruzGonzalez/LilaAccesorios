@@ -7,6 +7,7 @@ import TablaGastos from './components/TablaGastos';
 import CargandoPage from '../../shared/components/CargandoPage';
 import Page from '../../shared/components/Page';
 import Card from '../../shared/components/Card';
+import H1 from '../../shared/components/H1';
 
 export const GastosPage: React.FC = () => {
   const {
@@ -41,7 +42,7 @@ export const GastosPage: React.FC = () => {
     <Page>
       <div className="page-header">
         <div>
-          <h1 className="page-title">Gastos</h1>
+          <H1 texto="Gastos" />
           <p className="page-subtitle">Gestiona los gastos del negocio</p>
         </div>
         <button className="btn-primary" onClick={handleNuevoGasto}>

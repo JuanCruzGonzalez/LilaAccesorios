@@ -3,6 +3,7 @@ import { useProductos } from '../productos/context/ProductosContext';
 import { Pagination } from '../../shared/components/Pagination';
 import Page from '../../shared/components/Page';
 import Card from '../../shared/components/Card';
+import H1 from '../../shared/components/H1';
 
 interface StockPageProps { }
 
@@ -27,7 +28,7 @@ export const StockPage: React.FC<StockPageProps> = () => {
     <Page>
       <div className="page-header">
         <div>
-          <h1 className="page-title">Control de Stock</h1>
+          <H1 texto="Teléfonos" />
           <p className="page-subtitle">Monitorea el inventario de productos</p>
         </div>
         <button className="btn-primary" onClick={onActualizarStock}>

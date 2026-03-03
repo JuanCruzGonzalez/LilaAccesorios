@@ -8,6 +8,7 @@ import { ModalActualizarStock } from './components/ModalActualizarStock';
 import { useCategorias } from '../categorias/context/CategoriasContext';
 import Page from '../../shared/components/Page';
 import Card from '../../shared/components/Card';
+import H1 from '../../shared/components/H1';
 
 export const TelefonosPage: React.FC = () => {
   const {
@@ -56,7 +57,7 @@ export const TelefonosPage: React.FC = () => {
     <Page>
       <div className="page-header">
         <div>
-          <h1 className="page-title">Teléfonos</h1>
+          <H1 texto="Teléfonos" />
           <p className="page-subtitle">Administra tu catálogo de teléfonos</p>
         </div>
         <button className="btn-primary" onClick={() => modalNuevoProducto.open()}>
