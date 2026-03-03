@@ -1,9 +1,13 @@
-import React, { useState, useMemo } from 'react';
-import { construirArbolCategorias } from './services/categoriaService';
-import { ArbolCategorias } from './components/ArbolCategorias';
+import React, { useState } from 'react';
 import { useCategorias } from './context/CategoriasContext';
 import { ModalCategoria } from './components/ModalCategoria';
 import CargandoPage from '../../shared/components/CargandoPage';
+import Page from '../../shared/components/Page';
+import Estadisticas from './components/Estadisticas';
+import './styles/CategoriasPage.css';
+import Filtros from './components/Filtros';
+import Card from '../../shared/components/Card';
+import TableCategorias from './components/TableCategorias';
 
 export const CategoriasPage: React.FC = () => {
   const {
@@ -30,15 +34,13 @@ export const CategoriasPage: React.FC = () => {
     return true;
   });
 
-  // Construir árbol de categorías
-  const arbolCategorias = useMemo(() => {
-    return construirArbolCategorias(categoriasFiltradas);
-  }, [categoriasFiltradas]);
-
   const categoriasActivas = categorias.filter(c => c.estado === true);
 
+  const handleFiltroChange = (value: 'all' | 'activo' | 'inactivo') => {
+    setFiltroEstado(value);
+  }
   return (
-    <div className="page">
+    <Page>
       <div className="page-header">
         <div>
           <h1 className="page-title">Categorías</h1>
@@ -49,59 +51,13 @@ export const CategoriasPage: React.FC = () => {
         </button>
       </div>
 
-      <div className="stats-grid">
-        <div className="stat-card-minimal">
-          <div className="stat-label">Categorías Activas</div>
-          <div className="stat-value">{categoriasActivas.length}</div>
-        </div>
-        <div className="stat-card-minimal">
-          <div className="stat-label">Total de Categorías</div>
-          <div className="stat-value">{categorias.length}</div>
-        </div>
-      </div>
+      <Estadisticas categorias={categorias} categoriasActivas={categoriasActivas} />
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', paddingRight: '24px' }}>
-        <div style={{ display: 'flex', gap: '8px' }}>
-          <select
-            value={filtroEstado}
-            onChange={(e) => setFiltroEstado(e.target.value as 'all' | 'activo' | 'inactivo')}
-            style={{ padding: '10px', backgroundColor: '#f9f9f9', border: '1px solid #ddd', borderRadius: '4px', color: '#333' }}
-          >
-            <option value="all">Todos</option>
-            <option value="activo">Activas</option>
-            <option value="inactivo">Inactivas</option>
-          </select>
-        </div>
-      </div>
-      <div className="card">
+      <Filtros filtroEstado={filtroEstado} handleFiltroChange={handleFiltroChange} />
+      <Card>
+        <TableCategorias categoriasFiltradas={categoriasFiltradas} handleEditarCategoria={handleEditarCategoria} handleToggleCategoriaEstado={handleToggleCategoriaEstado}/>
+      </Card>
 
-        <div className="table-wrapper">
-          <table className="table">
-            <thead>
-              <tr>
-                <th>Nombre</th>
-                <th>Estado</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {categoriasFiltradas.length === 0 ? (
-                <tr>
-                  <td colSpan={4} className="empty-state">
-                    No hay categorías para mostrar
-                  </td>
-                </tr>
-              ) : (
-                <ArbolCategorias
-                  categorias={arbolCategorias}
-                  onEditar={handleEditarCategoria}
-                  onToggleEstado={handleToggleCategoriaEstado}
-                />
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
 
       <ModalCategoria
         isOpen={modalCategoria.isOpen}
@@ -110,6 +66,6 @@ export const CategoriasPage: React.FC = () => {
         initialCategoria={categoriaToEdit}
         categorias={categorias}
       />
-    </div>
+    </Page>
   );
 };

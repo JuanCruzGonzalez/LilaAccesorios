@@ -6,6 +6,8 @@ import { ModalCrearPromocion } from './components/ModalCrearPromocion';
 import ModalVerPromocion from './components/ModalVerPromocion';
 import { getProductosActivos } from '../productos/services/productoService';
 import { useToast } from '../../shared/hooks/useToast';
+import Page from '../../shared/components/Page';
+import Card from '../../shared/components/Card';
 
 export const PromocionesPage: React.FC = () => {
     const {
@@ -24,7 +26,7 @@ export const PromocionesPage: React.FC = () => {
         staleTime: 1000 * 60 * 5,
     });
     return (
-        <div className="page">
+        <Page>
             <div className="page-header">
                 <div>
                     <h1 className="page-title">Promociones</h1>
@@ -33,7 +35,7 @@ export const PromocionesPage: React.FC = () => {
                 <button className="btn-primary" onClick={modalCrearPromocion.open}>+ Nueva Promoción</button>
             </div>
 
-            <div className="card">
+            <Card>
                 <div className="table-wrapper">
                     <table className="table">
                         <thead>
@@ -106,7 +108,7 @@ export const PromocionesPage: React.FC = () => {
                         </tbody>
                     </table>
                 </div>
-            </div>
+            </Card>
 
             {/* Modales */}
             <ModalCrearPromocion 
@@ -116,7 +118,7 @@ export const PromocionesPage: React.FC = () => {
             <ModalVerPromocion 
                 productosCatalogo={productosActivos}
             />
-        </div>
+        </Page>
     );
 };
 

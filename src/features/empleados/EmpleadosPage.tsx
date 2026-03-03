@@ -7,12 +7,13 @@ import TablaEmpleados from './components/TablaEmpleado';
 import { useState } from 'react';
 import ModalEmpleado from './components/ModalEmpleado';
 import { Empleado } from '../../core/types';
+import Page from '../../shared/components/Page';
 
 const EmpleadosPage: React.FC = () => {
   const { user } = useAuth();
   const { modalEmpleado, empleadoToEdit, handleNuevoEmpleado } = useEmpleado();
   const { empleados, isLoading, handleEditarEmpleado, handleToggleEmpleadoEstado } = useEmpleado();
-  
+
   const [modalView, setModalView] = useState<{ open: boolean; empleado?: Empleado }>({ open: false });
 
   const empleadosOrdenados = [...empleados].sort((a, b) => (a.nombre || '').localeCompare(b.nombre || ''));
@@ -24,7 +25,7 @@ const EmpleadosPage: React.FC = () => {
   if (!user || user.user_metadata?.role !== 'admin') return null;
 
   return (
-    <div className='page'>
+    <Page>
       <div className='page-header flex '>
         <h2 className='tituloEmpleados'>Empleados</h2>
         <button
@@ -58,7 +59,7 @@ const EmpleadosPage: React.FC = () => {
         </div>
       )}
       <ModalEmpleado modalView={modalView} handleEstadoModalView={handleEstadoModalView} />
-    </div>
+    </Page>
 
   );
 };

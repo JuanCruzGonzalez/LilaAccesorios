@@ -1,0 +1,15 @@
+.filtros{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-right: 24px;
+    background-color: #f9fafb;
+    padding: 16px 0;
+    border-radius: 8px;
+}
+
+.filtro{
+    display: 'flex';
+    gap: '8px';
+}

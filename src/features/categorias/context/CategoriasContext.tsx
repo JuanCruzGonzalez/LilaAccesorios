@@ -31,7 +31,7 @@ interface CategoriasContextValue {
   handleNuevaCategoria: () => void;
   handleEditarCategoria: (categoria: Categoria) => void;
   handleSubmitCategoria: (nombre: string, id_categoria_padre?: number | null) => Promise<void>;
-  handleToggleCategoriaEstado: (id_categoria: number, estadoActual: boolean, nombre: string) => Promise<void>;
+  handleToggleCategoriaEstado: (categoria: Categoria) => Promise<void>;
 }
 
 interface CategoriasProviderProps {
@@ -158,22 +158,20 @@ export const CategoriasProvider: React.FC<CategoriasProviderProps> = ({
   };
 
   const handleToggleCategoriaEstado = async (
-    id_categoria: number,
-    estadoActual: boolean,
-    nombre: string
+    categoria: Categoria
   ) => {
-    const mensaje = estadoActual ? 'desactivar' : 'activar';
+    const mensaje = categoria.estado ? 'desactivar' : 'activar';
 
     showConfirm(
       `¿${mensaje.charAt(0).toUpperCase() + mensaje.slice(1)} categoría?`,
-      `¿Estás seguro de ${mensaje} "${nombre}"?`,
+      `¿Estás seguro de ${mensaje} "${categoria.nombre}"?`,
       async () => {
         await toggleEstadoMutation.mutateAsync({
-          id_categoria,
-          nuevoEstado: !estadoActual,
+          id_categoria: categoria.id_categoria,
+          nuevoEstado: !categoria.estado,
         });
       },
-      estadoActual ? 'danger' : 'info'
+      categoria.estado ? 'danger' : 'info'
     );
   };
 

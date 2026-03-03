@@ -5,6 +5,8 @@ import EstadisticasGrid from './components/EstadisticasGrid';
 import Filtros from './components/Filtros';
 import TablaGastos from './components/TablaGastos';
 import CargandoPage from '../../shared/components/CargandoPage';
+import Page from '../../shared/components/Page';
+import Card from '../../shared/components/Card';
 
 export const GastosPage: React.FC = () => {
   const {
@@ -36,7 +38,7 @@ export const GastosPage: React.FC = () => {
   };
 
   return (
-    <div className="page">
+    <Page>
       <div className="page-header">
         <div>
           <h1 className="page-title">Gastos</h1>
@@ -49,12 +51,12 @@ export const GastosPage: React.FC = () => {
 
       <EstadisticasGrid gastos={gastos} />
 
-      <div className="card">
+      <Card>
         <Filtros filtroEstado={filtroEstado} onFiltroChange={handleFiltroChange} />
         <div className="table-wrapper">
           <TablaGastos gastosFiltrados={gastosFiltrados} handleEditarGasto={handleEditarGasto} handleToggleGastoEstado={handleToggleGastoEstado} />
         </div>
-      </div>
+      </Card>
 
       <ModalGasto
         isOpen={modalGasto.isOpen}
@@ -62,6 +64,6 @@ export const GastosPage: React.FC = () => {
         onSubmit={handleSubmitGasto}
         initialGasto={gastoToEdit}
       />
-    </div>
+    </Page>
   );
 };

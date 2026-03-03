@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useProductos } from '../productos/context/ProductosContext';
 import { Pagination } from '../../shared/components/Pagination';
+import Page from '../../shared/components/Page';
+import Card from '../../shared/components/Card';
 
 interface StockPageProps { }
 
@@ -22,7 +24,7 @@ export const StockPage: React.FC<StockPageProps> = () => {
   const endIndex = startIndex + pageSize;
   const productosPaginados = productosOrdenados.slice(startIndex, endIndex);
   return (
-    <div className="page">
+    <Page>
       <div className="page-header">
         <div>
           <h1 className="page-title">Control de Stock</h1>
@@ -54,7 +56,7 @@ export const StockPage: React.FC<StockPageProps> = () => {
         pageSize={pageSize}
         onPageChange={setCurrentPage}
       />
-      <div className="card">
+      <Card>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
           <h2 className="card-title">Inventario por Stock</h2>
         </div>
@@ -100,7 +102,7 @@ export const StockPage: React.FC<StockPageProps> = () => {
             </tbody>
           </table>
         </div>
-      </div>
+      </Card>
       <Pagination
         currentPage={currentPage}
         totalItems={productosOrdenados.length}
@@ -113,6 +115,6 @@ export const StockPage: React.FC<StockPageProps> = () => {
           <strong>⚠️ Atención:</strong> {stockBajo.length} producto(s) con stock bajo requieren reposición.
         </div>
       )}
-    </div>
+    </Page>
   );
 };

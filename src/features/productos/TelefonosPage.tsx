@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useDebounce } from '../../shared/hooks/useDebounce';
 import { getProductImageUrl } from '../../shared/services/storageService';
 import { useProductos } from './context/ProductosContext';
@@ -6,6 +6,8 @@ import { Pagination } from '../../shared/components/Pagination';
 import { ModalNuevoProducto } from './components/ModalNuevoProducto';
 import { ModalActualizarStock } from './components/ModalActualizarStock';
 import { useCategorias } from '../categorias/context/CategoriasContext';
+import Page from '../../shared/components/Page';
+import Card from '../../shared/components/Card';
 
 export const TelefonosPage: React.FC = () => {
   const {
@@ -30,11 +32,11 @@ export const TelefonosPage: React.FC = () => {
   const debounced = useDebounce(searchTerm, 300);
 
   // Establecer que estamos en teléfonos al montar
-  React.useEffect(() => {
+  useEffect(() => {
     setTipoProductoActual('telefono');
   }, [setTipoProductoActual]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (debounced !== productosSearchQuery) {
       handleBuscarProductos(debounced);
     }
@@ -51,7 +53,7 @@ export const TelefonosPage: React.FC = () => {
   }, [productos, statusFilter]);
 
   return (
-    <div className="page">
+    <Page>
       <div className="page-header">
         <div>
           <h1 className="page-title">Teléfonos</h1>
@@ -97,7 +99,7 @@ export const TelefonosPage: React.FC = () => {
         pageSize={PAGE_SIZE}
         onPageChange={loadProductosPage}
       />
-      <div className="card">
+      <Card>
         <div className="table-wrapper">
           <table className="table">
             <thead>
@@ -201,7 +203,7 @@ export const TelefonosPage: React.FC = () => {
             </tbody>
           </table>
         </div>
-      </div>
+      </Card>
       <Pagination
         currentPage={productosPageNum}
         totalItems={productosTotal}
@@ -214,6 +216,6 @@ export const TelefonosPage: React.FC = () => {
         categorias={categorias}
       />
       <ModalActualizarStock />
-    </div>
+    </Page>
   );
 };

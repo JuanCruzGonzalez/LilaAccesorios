@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { CategoriaConHijos } from '../../../core/types';
+import { Categoria, CategoriaConHijos } from '../../../core/types';
 
 interface ArbolCategoriasItemProps {
     categorias: CategoriaConHijos[];
     onEditar: (categoria: CategoriaConHijos) => void;
-    onToggleEstado: (id_categoria: number, estadoActual: boolean, nombre: string) => void;
+    onToggleEstado: (categoria: Categoria) => void;
     expandidos: Set<number>;
     onToggleExpandir: (id: number) => void;
     nivel?: number;
@@ -103,7 +103,7 @@ const ArbolCategoriasItem: React.FC<ArbolCategoriasItemProps> = ({
                                     <button
                                         className="btn-sm btn-danger"
                                         aria-label="Desactivar"
-                                        onClick={() => onToggleEstado(categoria.id_categoria, categoria.estado, categoria.nombre)}
+                                        onClick={() => onToggleEstado(categoria)}
                                         style={{ width: '40px', display: 'flex', justifyContent: 'center', height: '40px', border: '1px solid #ddd', padding: 10 }}
                                     >
                                         <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -117,7 +117,7 @@ const ArbolCategoriasItem: React.FC<ArbolCategoriasItemProps> = ({
                                     <button
                                         className="btn-sm btn-primary"
                                         aria-label="Activar"
-                                        onClick={() => onToggleEstado(categoria.id_categoria, categoria.estado, categoria.nombre)}
+                                        onClick={() => onToggleEstado(categoria)}
                                         style={{ width: '40px', display: 'flex', justifyContent: 'center', height: '40px', border: '1px solid #ddd', padding: 10 }}
                                     >
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -149,7 +149,7 @@ const ArbolCategoriasItem: React.FC<ArbolCategoriasItemProps> = ({
 interface ArbolCategoriasProps {
     categorias: CategoriaConHijos[];
     onEditar: (categoria: CategoriaConHijos) => void;
-    onToggleEstado: (id_categoria: number, estadoActual: boolean, nombre: string) => void;
+    onToggleEstado: (categoria: Categoria) => void;
 }
 
 export const ArbolCategorias: React.FC<ArbolCategoriasProps> = ({

@@ -4,6 +4,8 @@ import { ModalDetallePedido } from './components/ModalDetallePedido';
 import { formatPrice, formatDate } from '../../shared/utils';
 import { EstadoPedido } from '../../core/types';
 import CargandoPage from '../../shared/components/CargandoPage';
+import Page from '../../shared/components/Page';
+import Card from '../../shared/components/Card';
 
 export const PedidosPage: React.FC = () => {
   const {
@@ -135,7 +137,7 @@ export const PedidosPage: React.FC = () => {
   }
 
   return (
-    <div className="page">
+    <Page>
       <div className="page-header">
         <div>
           <h1 className="page-title">Pedidos</h1>
@@ -169,7 +171,7 @@ export const PedidosPage: React.FC = () => {
       )}
 
       {/* Filtros y búsqueda */}
-      <div className="card">
+      <Card>
         <div style={{ display: 'flex', gap: '12px', marginBottom: '16px', paddingRight: '24px', padding: '24px' }}>
           <select
             value={filtroEstado}
@@ -263,9 +265,9 @@ export const PedidosPage: React.FC = () => {
             </tbody>
           </table>
         </div>
-      </div>
+      </Card>
 
       <ModalDetallePedido />
-    </div>
+    </Page>
   );
 };
