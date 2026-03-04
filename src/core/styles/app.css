@@ -687,6 +687,14 @@ input[type=number] {
   }
 }
 
+.cancel-button{
+  width: 100%;
+}
+
+
+.btn-dollar{
+  margin-bottom: 2em;
+}
 /* ============================================
    FORMULARIOS
    ============================================ */
@@ -1184,7 +1192,7 @@ input[type=number] {
 }
 
 .padding-10 {
-  padding: 10px;
+  padding: 10px !important;
 }
 
 .background-gray {

@@ -3,6 +3,7 @@ import { useProductos } from '../../productos/context/ProductosContext';
 import { Producto } from '../../../core/types';
 import ProductosDropDown from './ProductosDropDown';
 import InputBusqueda from './InputBusqueda';
+import Modal from '../../../shared/components/Modal';
 
 interface ModalActualizarStockProps { }
 
@@ -80,56 +81,50 @@ export const ModalActualizarStock = React.memo<ModalActualizarStockProps>(() => 
   };
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-minimal" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-minimal-header">
-          <h2>Actualizar Stock</h2>
-          <button className="btn-close" onClick={onClose}>×</button>
-        </div>
-        <div className="modal-minimal-body">
-          <div className="form-group" style={{ position: 'relative' }} ref={searchRef}>
-            <label>Buscar Producto</label>
-            <InputBusqueda
-              busqueda={busqueda}
-              handleSetBusqueda={handleSetBusqueda}
-              handleSeleccionarProducto={handleSeleccionarProducto}
-              handleSetDropDown={handleSetDropDown}
-              loading={loading}
-            />
-            {showDropdown && busqueda && productosFiltrados.length > 0 && (
-              <div className='item-buscador'>
-                <ProductosDropDown productosFiltrados={productosFiltrados} seleccionarProducto={seleccionarProducto} />
-              </div>
-            )}
-          </div>
-          {productoSeleccionado && (
-            <div className="form-group">
-              <label>Stock actual</label>
-              <input
-                type="text"
-                value={productoSeleccionado.stock}
-                readOnly
-                className="readonly"
-              />
+    <Modal close={modalActualizarStock.close} title="Actualizar Stock">
+      <div className="modal-minimal-body">
+        <div className="form-group" style={{ position: 'relative' }} ref={searchRef}>
+          <label>Buscar Producto</label>
+          <InputBusqueda
+            busqueda={busqueda}
+            handleSetBusqueda={handleSetBusqueda}
+            handleSeleccionarProducto={handleSeleccionarProducto}
+            handleSetDropDown={handleSetDropDown}
+            loading={loading}
+          />
+          {showDropdown && busqueda && productosFiltrados.length > 0 && (
+            <div className='item-buscador'>
+              <ProductosDropDown productosFiltrados={productosFiltrados} seleccionarProducto={seleccionarProducto} />
             </div>
           )}
+        </div>
+        {productoSeleccionado && (
           <div className="form-group">
-            <label>Cantidad a agregar</label>
+            <label>Stock actual</label>
             <input
-              type="number"
-              value={cantidad}
-              onChange={(e) => setCantidad(e.target.value)}
-              min="1"
-              placeholder="0"
-              disabled={loading}
+              type="text"
+              value={productoSeleccionado.stock}
+              readOnly
+              className="readonly"
             />
           </div>
-        </div>
-        <div className="modal-minimal-footer">
-          <button className="btn-secondary" onClick={onClose} disabled={loading}>Cancelar</button>
-          <button className="btn-primary" onClick={handleSubmit} disabled={loading}>{loading ? 'Actualizando...' : 'Actualizar'}</button>
+        )}
+        <div className="form-group">
+          <label>Cantidad a agregar</label>
+          <input
+            type="number"
+            value={cantidad}
+            onChange={(e) => setCantidad(e.target.value)}
+            min="1"
+            placeholder="0"
+            disabled={loading}
+          />
         </div>
       </div>
-    </div>
+      <div className="modal-minimal-footer">
+        <button className="btn-secondary" onClick={onClose} disabled={loading}>Cancelar</button>
+        <button className="btn-primary" onClick={handleSubmit} disabled={loading}>{loading ? 'Actualizando...' : 'Actualizar'}</button>
+      </div>
+    </Modal>
   );
 });

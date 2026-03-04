@@ -97,7 +97,7 @@ export const ModalCotizacionDolar: React.FC<ModalCotizacionDolarProps> = ({
 
   return (
     <div className="modal-overlay" onClick={handleClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '600px' }}>
+      <div className="modal-minimal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '600px' }}>
         <div className="modal-header">
           <h2 className="modal-title">💵 Cotización del Dólar</h2>
           <button className="modal-close" onClick={handleClose}>×</button>
@@ -155,7 +155,7 @@ export const ModalCotizacionDolar: React.FC<ModalCotizacionDolarProps> = ({
             <div className="form-actions">
               <button 
                 type="button" 
-                className="btn-secondary" 
+                className="btn-secondary cancel-button" 
                 onClick={handleClose}
                 disabled={loading}
               >

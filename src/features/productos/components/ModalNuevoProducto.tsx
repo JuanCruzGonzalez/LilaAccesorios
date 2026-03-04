@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Categoria, ProductoImagen } from '../../../core/types';
 import { useProductos } from '../context/ProductosContext';
 import { GestorImagenesProducto } from './GestorImagenesProducto';
+import Modal from '../../../shared/components/Modal';
+import ModalCategorias from './ModalCategorias';
 
 interface ModalNuevoProductoProps {
   categorias: Categoria[];
@@ -40,6 +42,14 @@ export const ModalNuevoProducto = React.memo<ModalNuevoProductoProps>(({
   const [ordenDestacado, setOrdenDestacado] = useState(initialProduct?.orden_destacado ? String(initialProduct.orden_destacado) : '');
   const [categoriasSeleccionadas, setCategoriasSeleccionadas] = useState<number[]>(categoriasIniciales);
   const [modalCategoriasOpen, setModalCategoriasOpen] = useState(false);
+
+  const handleSetCategoriasSeleccionadas = (ids: number[]) => {
+    setCategoriasSeleccionadas(ids);
+  };
+
+  const handleToggleModalCategorias = () => {
+    setModalCategoriasOpen(prev => !prev);
+  }
 
   useEffect(() => {
     if (initialProduct) {
@@ -148,12 +158,7 @@ export const ModalNuevoProducto = React.memo<ModalNuevoProductoProps>(({
   };
   
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-minimal" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-minimal-header">
-          <h2>{initialProduct ? 'Actualizar Producto' : 'Nuevo Producto'}</h2>
-          <button className="btn-close" onClick={onClose}>×</button>
-        </div>
+    <Modal close={modalNuevoProducto.close} title={initialProduct ? 'Actualizar Producto' : 'Nuevo Producto'}>
         <div className="modal-minimal-body">
           <div className="form-group">
             <label>Nombre *</label>
@@ -356,96 +361,16 @@ export const ModalNuevoProducto = React.memo<ModalNuevoProductoProps>(({
             {loading ? (initialProduct ? 'Actualizando...' : 'Guardando...') : (initialProduct ? 'Actualizar Producto' : 'Crear Producto')}
           </button>
         </div>
-      </div>
 
       {/* Modal de selección de categorías */}
       {modalCategoriasOpen && (
-        <div className="modal-overlay" style={{ zIndex: 1001 }} onClick={() => setModalCategoriasOpen(false)}>
-          <div 
-            className="modal-minimal" 
-            onClick={(e) => e.stopPropagation()}
-            style={{ maxWidth: '500px', maxHeight: '80vh', display: 'flex', flexDirection: 'column' }}
-          >
-            <div className="modal-minimal-header">
-              <h2>Seleccionar Categorías</h2>
-              <button className="btn-close" onClick={() => setModalCategoriasOpen(false)}>×</button>
-            </div>
-            <div style={{ flex: 1, overflowY: 'auto', padding: '20px' }}>
-              {categorias.filter(c => c.estado).length === 0 ? (
-                <p style={{ margin: 0, color: '#999', fontSize: '14px', textAlign: 'center' }}>No hay categorías disponibles</p>
-              ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  {categorias.filter(c => c.estado).map(categoria => (
-                    <label 
-                      key={categoria.id_categoria}
-                      style={{ 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        gap: '12px', 
-                        padding: '12px',
-                        cursor: 'pointer',
-                        fontSize: '14px',
-                        border: '1px solid #e5e7eb',
-                        borderRadius: '8px',
-                        backgroundColor: categoriasSeleccionadas.includes(categoria.id_categoria) ? '#f0f9ff' : '#fff',
-                        transition: 'all 0.2s'
-                      }}
-                      onMouseEnter={(e) => {
-                        if (!categoriasSeleccionadas.includes(categoria.id_categoria)) {
-                          e.currentTarget.style.backgroundColor = '#f9fafb';
-                        }
-                      }}
-                      onMouseLeave={(e) => {
-                        if (!categoriasSeleccionadas.includes(categoria.id_categoria)) {
-                          e.currentTarget.style.backgroundColor = '#fff';
-                        }
-                      }}
-                    >
-                      <input
-                        type="checkbox"
-                        checked={categoriasSeleccionadas.includes(categoria.id_categoria)}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            setCategoriasSeleccionadas([...categoriasSeleccionadas, categoria.id_categoria]);
-                          } else {
-                            setCategoriasSeleccionadas(categoriasSeleccionadas.filter(id => id !== categoria.id_categoria));
-                          }
-                        }}
-                        style={{ 
-                          width: '18px', 
-                          height: '18px',
-                          margin: 0,
-                          cursor: 'pointer',
-                          accentColor: '#3b82f6'
-                        }}
-                      />
-                      <span style={{ flex: 1, fontWeight: categoriasSeleccionadas.includes(categoria.id_categoria) ? 600 : 400 }}>
-                        {categoria.nombre}
-                      </span>
-                    </label>
-                  ))}
-                </div>
-              )}
-            </div>
-            <div className="modal-minimal-footer">
-              <button 
-                className="btn-secondary" 
-                onClick={() => setCategoriasSeleccionadas([])}
-                style={{ flex: 1 }}
-              >
-                Limpiar Todo
-              </button>
-              <button 
-                className="btn-primary" 
-                onClick={() => setModalCategoriasOpen(false)}
-                style={{ flex: 1 }}
-              >
-                Confirmar ({categoriasSeleccionadas.length})
-              </button>
-            </div>
-          </div>
-        </div>
+        <ModalCategorias
+          categorias={categorias}
+          categoriasSeleccionadas={categoriasSeleccionadas}
+          setCategoriasSeleccionadas={handleSetCategoriasSeleccionadas}
+          setModalCategoriasOpen={handleToggleModalCategorias}
+        />
       )}
-    </div>
+    </Modal>
   );
 });

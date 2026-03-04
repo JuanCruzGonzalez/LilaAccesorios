@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Modal from '../../../shared/components/Modal';
 
 interface DatosClienteModalProps {
     isOpen: boolean;
@@ -75,18 +76,7 @@ export const DatosClienteModal: React.FC<DatosClienteModalProps> = ({
     };
 
     return (
-        <div className="modal-overlay" onClick={handleClose}>
-            <div className="modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '500px' }}>
-                <div className="modal-header">
-                    <h2>Datos del Cliente</h2>
-                    <button className="modal-close" onClick={handleClose}>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <line x1="18" y1="6" x2="6" y2="18"></line>
-                            <line x1="6" y1="6" x2="18" y2="18"></line>
-                        </svg>
-                    </button>
-                </div>
-
+        <Modal close={handleClose} title="Datos del Cliente">
                 <form onSubmit={handleSubmit}>
                     <div className="modal-body">
                         <p style={{ marginBottom: '20px', color: '#666', fontSize: '14px' }}>
@@ -175,7 +165,7 @@ export const DatosClienteModal: React.FC<DatosClienteModalProps> = ({
                             />
                         </div>
                         <div className="modal-footer">
-                            <button type="button" className="btn-secondary btn-cancel-pedido" onClick={handleClose}>
+                            <button type="button" className="btn-secondary btn-cancel-pedido cancel-button" onClick={handleClose}>
                                 Cancelar
                             </button>
                             <button type="submit" className="btn-primary">
@@ -185,7 +175,6 @@ export const DatosClienteModal: React.FC<DatosClienteModalProps> = ({
                     </div>
 
                 </form>
-            </div>
-        </div>
+            </Modal>
     );
 };

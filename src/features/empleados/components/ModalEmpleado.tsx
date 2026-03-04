@@ -1,19 +1,10 @@
 import { Empleado } from "../../../core/types";
+import Modal from "../../../shared/components/Modal";
 
 export default function ModalEmpleado({ modalView, handleEstadoModalView }: { modalView: { open: boolean; empleado?: Empleado };  handleEstadoModalView: (empleado: Empleado, open: boolean) => void;}) {
     if (!modalView.open) return null;
     return (
-        <div className="modal-overlay" onClick={() => handleEstadoModalView(modalView.empleado!, false)}>
-            <div className="modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '800px' }}>
-                <div className="modal-header">
-                    <h2>Informacion del Empleado</h2>
-                    <button className="modal-close" onClick={() => handleEstadoModalView(modalView.empleado!, false)}>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <line x1="18" y1="6" x2="6" y2="18"></line>
-                            <line x1="6" y1="6" x2="18" y2="18"></line>
-                        </svg>
-                    </button>
-                </div>
+        <Modal close={() => handleEstadoModalView(modalView.empleado!, false)} title="Información del Empleado">
                 <div className="modal-body modalEmpleadoDetalleBody">
                     <table className="empleadoDetalleTable">
                         <tbody>
@@ -59,7 +50,6 @@ export default function ModalEmpleado({ modalView, handleEstadoModalView }: { mo
                         <button onClick={() => handleEstadoModalView(modalView.empleado!, false)}>Cerrar</button>
                     </div>
                 </div>
-            </div>
-        </div>
+            </Modal>
     )
 }

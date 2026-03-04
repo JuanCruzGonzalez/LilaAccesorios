@@ -15,8 +15,10 @@ export default function BotonAccion({ handle, p, icon, tipo }: { handle: (p: any
     };
     const getButtonClassBg = () => {
         switch (tipo) {
-            case 'cambiar-estado':
-                return 'background-white';
+            case 'ver':
+                return 'background-gray';
+            case 'editar':
+                return 'background-gray';
             default:
                 return '';
         }

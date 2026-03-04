@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Categoria } from '../../../core/types';
+import Modal from '../../../shared/components/Modal';
 
 interface ModalCategoriaProps {
   isOpen: boolean;
@@ -57,12 +58,7 @@ export const ModalCategoria: React.FC<ModalCategoriaProps> = ({
   );
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-minimal" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-minimal-header">
-          <h2>{initialCategoria ? 'Editar Categoría' : 'Nueva Categoría'}</h2>
-          <button className="btn-close" onClick={onClose}>×</button>
-        </div>
+    <Modal close={onClose} title={initialCategoria ? 'Editar Categoría' : 'Nueva Categoría'}>
         <div className="modal-minimal-body">
           <div className="form-group">
             <label>Nombre *</label>
@@ -100,7 +96,6 @@ export const ModalCategoria: React.FC<ModalCategoriaProps> = ({
             {loading ? 'Guardando...' : initialCategoria ? 'Actualizar' : 'Crear'}
           </button>
         </div>
-      </div>
-    </div>
+      </Modal>
   );
 };

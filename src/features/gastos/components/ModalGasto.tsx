@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Gasto } from '../../../core/types';
+import Modal from '../../../shared/components/Modal';
 
 interface ModalGastoProps {
   isOpen: boolean;
@@ -44,45 +45,39 @@ export const ModalGasto: React.FC<ModalGastoProps> = ({
   };
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-minimal" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-minimal-header">
-          <h2>{initialGasto ? 'Editar Gasto' : 'Nuevo Gasto'}</h2>
-          <button className="btn-close" onClick={onClose}>×</button>
+    <Modal close={onClose} title={initialGasto ? 'Editar Gasto' : 'Nuevo Gasto'}>
+      <div className="modal-minimal-body">
+        <div className="form-group">
+          <label>Costo *</label>
+          <input
+            type="number"
+            value={costo}
+            onChange={(e) => setCosto(e.target.value)}
+            placeholder="0.00"
+            min="0"
+            step="0.01"
+            disabled={loading}
+          />
         </div>
-        <div className="modal-minimal-body">
-          <div className="form-group">
-            <label>Costo *</label>
-            <input
-              type="number"
-              value={costo}
-              onChange={(e) => setCosto(e.target.value)}
-              placeholder="0.00"
-              min="0"
-              step="0.01"
-              disabled={loading}
-            />
-          </div>
-          <div className="form-group">
-            <label>Descripción</label>
-            <textarea
-              value={descripcion}
-              onChange={(e) => setDescripcion(e.target.value)}
-              placeholder="Descripción del gasto (opcional)"
-              rows={3}
-              disabled={loading}
-            />
-          </div>
-        </div>
-        <div className="modal-minimal-footer">
-          <button className="btn-secondary" onClick={onClose} disabled={loading}>
-            Cancelar
-          </button>
-          <button className="btn-primary" onClick={handleSubmit} disabled={loading}>
-            {loading ? 'Guardando...' : initialGasto ? 'Actualizar' : 'Crear'}
-          </button>
+        <div className="form-group">
+          <label>Descripción</label>
+          <textarea
+            value={descripcion}
+            onChange={(e) => setDescripcion(e.target.value)}
+            placeholder="Descripción del gasto (opcional)"
+            rows={3}
+            disabled={loading}
+          />
         </div>
       </div>
-    </div>
+      <div className="modal-minimal-footer">
+        <button className="btn-secondary" onClick={onClose} disabled={loading}>
+          Cancelar
+        </button>
+        <button className="btn-primary" onClick={handleSubmit} disabled={loading}>
+          {loading ? 'Guardando...' : initialGasto ? 'Actualizar' : 'Crear'}
+        </button>
+      </div>
+    </Modal>
   );
 };

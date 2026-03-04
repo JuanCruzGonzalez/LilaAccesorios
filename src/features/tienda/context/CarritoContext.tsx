@@ -123,7 +123,7 @@ export const CarritoProvider: React.FC<{ children: ReactNode }> = ({ children })
         return [...prevCarrito, {
           id,
           tipo: 'producto' as const,
-          id_referencia: producto.id_producto,
+          id_referencia: producto.id_producto!,
           nombre: producto.nombre,
           descripcion: producto.descripcion,
           precio,

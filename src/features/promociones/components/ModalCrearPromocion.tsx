@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Producto } from '../../../core/types';
-import Cropper from 'react-easy-crop';
 import { getPromocionImageUrl } from '../../../shared/services/storageService';
 import { usePromociones } from '../context/PromocionesContext';
+import Modal from '../../../shared/components/Modal';
+import ModalRecorteImagen from './ModalRecorteImagen';
 
 interface ModalCrearPromocionProps {
   productos: Producto[];
@@ -256,12 +257,7 @@ export const ModalCrearPromocion = React.memo<ModalCrearPromocionProps>(({ produ
   };
 
   return (
-    <div className="modal-overlay" onClick={modalCrearPromocion.close}>
-      <div className="modal-minimal" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-minimal-header">
-          <h2>Nueva Promoción</h2>
-          <button className="btn-close" onClick={modalCrearPromocion.close}>×</button>
-        </div>
+    <Modal close={modalCrearPromocion.close} title={promocionToEdit ? 'Editar Promoción' : 'Crear Nueva Promoción'}>
         <div className="modal-minimal-body">
           <div className="form-group">
             <label>Nombre *</label>
@@ -421,59 +417,21 @@ export const ModalCrearPromocion = React.memo<ModalCrearPromocionProps>(({ produ
           <button className="btn-secondary" onClick={modalCrearPromocion.close} disabled={loading}>Cancelar</button>
           <button className="btn-primary" onClick={handleSubmit} disabled={loading}>{loading ? (promocionToEdit ? 'Actualizando...' : 'Guardando...') : (promocionToEdit ? 'Actualizar Promoción' : 'Crear Promoción')}</button>
         </div>
-      </div>
 
       {/* Modal de recorte de imagen */}
       {showCropper && imageToCrop && (
-        <div className="modal-overlay" style={{ zIndex: 1002 }} onClick={handleCropCancel}>
-          <div 
-            className="modal-minimal" 
-            onClick={(e) => e.stopPropagation()}
-            style={{ maxWidth: '600px', height: '80vh', display: 'flex', flexDirection: 'column' }}
-          >
-            <div className="modal-minimal-header">
-              <h2>Recortar Imagen (1:1)</h2>
-              <button className="btn-close" onClick={handleCropCancel}>×</button>
-            </div>
-            <div style={{ position: 'relative', flex: 1, minHeight: 0, backgroundColor: '#000' }}>
-              <Cropper
-                image={imageToCrop}
-                crop={crop}
-                zoom={zoom}
-                aspect={1}
-                onCropChange={setCrop}
-                onZoomChange={setZoom}
-                onCropComplete={onCropComplete}
-              />
-            </div>
-            <div style={{ padding: '20px', borderTop: '1px solid #ddd' }}>
-              <div style={{ marginBottom: '20px' }}>
-                <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: 600 }}>
-                  Zoom
-                </label>
-                <input
-                  type="range"
-                  min={1}
-                  max={3}
-                  step={0.1}
-                  value={zoom}
-                  onChange={(e) => setZoom(Number(e.target.value))}
-                  style={{ width: '100%' }}
-                />
-              </div>
-              <div style={{ display: 'flex', gap: '12px' }}>
-                <button className="btn-secondary" onClick={handleCropCancel} style={{ flex: 1 }}>
-                  Cancelar
-                </button>
-                <button className="btn-primary" onClick={handleCropConfirm} style={{ flex: 1 }}>
-                  Confirmar Recorte
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <ModalRecorteImagen 
+          imageToCrop={imageToCrop}
+          crop={crop}
+          zoom={zoom}
+          onCropChange={setCrop}
+          onZoomChange={setZoom}
+          onCropComplete={onCropComplete}
+          handleCropCancel={handleCropCancel}
+          handleCropConfirm={handleCropConfirm}
+        />
       )}
-    </div>
+    </Modal>
   );
 });
 
