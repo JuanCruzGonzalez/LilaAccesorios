@@ -83,7 +83,7 @@ export const TiendaProductosPage: React.FC = () => {
 
     if (categoriaSeleccionada !== null) {
       result = result.filter(p => {
-        const categsDelProducto = productosCategorias.get(p.id_producto) || [];
+        const categsDelProducto = productosCategorias.get(p.id_producto!) || [];
         return categsDelProducto.includes(categoriaSeleccionada);
       });
     }
@@ -98,7 +98,7 @@ export const TiendaProductosPage: React.FC = () => {
   }, [productos, busqueda, categoriaSeleccionada, productosCategorias, ordenPrecio]);
 
   const handleVerDetalleProducto = (producto: Producto) => {
-    const productUrl = generateProductUrl(producto.id_producto, producto.nombre);
+    const productUrl = generateProductUrl(producto.id_producto!, producto.nombre);
     navigate(`/producto/${productUrl}`);
   };
 

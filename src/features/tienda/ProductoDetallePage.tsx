@@ -28,7 +28,7 @@ export const ProductoDetallePage: React.FC = () => {
   );
 
   const handleVerDetalleProducto = (prod: Producto) => {
-    const productUrl = generateProductUrl(prod.id_producto, prod.nombre);
+    const productUrl = generateProductUrl(prod.id_producto!, prod.nombre);
     navigate(`/producto/${productUrl}`);
     window.scrollTo(0, 0);
   };
@@ -195,27 +195,27 @@ export const ProductoDetallePage: React.FC = () => {
               </span>
               {producto.stock > 0 && (
                 <span className="pd-stock-qty">
-                  Cantidad: <strong>{obtenerItemEnCarrito(producto.id_producto)?.cantidad || 1} unidad</strong> ({producto.stock} disponibles)
+                  Cantidad: <strong>{obtenerItemEnCarrito(producto.id_producto!)?.cantidad || 1} unidad</strong> ({producto.stock} disponibles)
                 </span>
               )}
             </div>
 
             {/* Cantidad si ya está en carrito */}
-            {obtenerItemEnCarrito(producto.id_producto) && (
+            {obtenerItemEnCarrito(producto.id_producto!) && (
               <div className="pd-qty-control">
                 <button
                   onClick={() => actualizarCantidad(
-                    `producto-${producto.id_producto}`,
-                    obtenerItemEnCarrito(producto.id_producto)!.cantidad - 1
+                    `producto-${producto.id_producto!}`,
+                    obtenerItemEnCarrito(producto.id_producto!)!.cantidad - 1
                   )}
                   className="pd-qty-btn">−</button>
                 <span className="pd-qty-value">
-                  {obtenerItemEnCarrito(producto.id_producto)!.cantidad}
+                  {obtenerItemEnCarrito(producto.id_producto!)!.cantidad}
                 </span>
                 <button
                   onClick={() => actualizarCantidad(
                     `producto-${producto.id_producto}`,
-                    obtenerItemEnCarrito(producto.id_producto)!.cantidad + 1
+                    obtenerItemEnCarrito(producto.id_producto!)!.cantidad + 1
                   )}
                   className="pd-qty-btn">+</button>
               </div>

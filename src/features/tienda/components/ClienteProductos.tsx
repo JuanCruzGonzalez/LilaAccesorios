@@ -90,7 +90,7 @@ export const ClienteProductos = React.memo<ClienteProductosProps>(({
 
     if (categoriasSeleccionadas.length > 0) {
       result = result.filter(p => {
-        const categsDelProducto = productosCategorias.get(p.id_producto) || [];
+        const categsDelProducto = productosCategorias.get(p.id_producto!) || [];
         return categsDelProducto.some(catId => categoriasSeleccionadas.includes(catId));
       });
     }
@@ -300,7 +300,7 @@ export const ClienteProductos = React.memo<ClienteProductosProps>(({
               </div>
             ) : (
               productosEnPagina.map((producto) => {
-                const itemEnCarrito = obtenerItemEnCarrito(producto.id_producto);
+                const itemEnCarrito = obtenerItemEnCarrito(producto.id_producto!);
                 const tienePromo = producto.promocion_activa && producto.precio_promocion != null;
 
                 return (

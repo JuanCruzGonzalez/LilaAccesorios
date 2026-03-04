@@ -20,7 +20,7 @@ export const ProductoCard: React.FC<ProductoCardProps> = ({
   onVerDetalle,
   categoriasProducto = [],
 }) => {
-  const itemEnCarrito = obtenerItemEnCarrito(producto.id_producto);
+  const itemEnCarrito = obtenerItemEnCarrito(producto.id_producto!);
 
   return (
     <div className="modern-product-card">

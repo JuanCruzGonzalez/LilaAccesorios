@@ -40,7 +40,7 @@ export const ProductosGrid: React.FC<ProductosGridProps> = ({
             actualizarCantidad={actualizarCantidad}
             manejarAgregarProducto={manejarAgregarProducto}
             onVerDetalle={onVerDetalle}
-            categoriasProducto={getNombresCategorias(producto.id_producto)}
+            categoriasProducto={getNombresCategorias(producto.id_producto!)}
           />
         ))}
       </div>

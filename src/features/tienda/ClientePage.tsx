@@ -55,7 +55,7 @@ export const ClientePage: React.FC = () => {
   };
 
   const handleVerDetalleProducto = (producto: Producto) => {
-    const productUrl = generateProductUrl(producto.id_producto, producto.nombre);
+    const productUrl = generateProductUrl(producto.id_producto!, producto.nombre);
     navigate(`/producto/${productUrl}`);
   };
 
@@ -198,21 +198,21 @@ export const ClientePage: React.FC = () => {
                           </span>
                         )}
                       </div>
-                      {obtenerItemEnCarrito(producto.id_producto) ? (
+                      {obtenerItemEnCarrito(producto.id_producto!) ? (
                         <div className="modern-accessory-quantity">
                           <button
                             onClick={() => actualizarCantidad(
                               `producto-${producto.id_producto}`,
-                              obtenerItemEnCarrito(producto.id_producto)!.cantidad - 1
+                              obtenerItemEnCarrito(producto.id_producto!)!.cantidad - 1
                             )}
                             className="modern-quantity-btn mini">−</button>
                           <span className="modern-quantity-value mini">
-                            {obtenerItemEnCarrito(producto.id_producto)!.cantidad}
+                            {obtenerItemEnCarrito(producto.id_producto!)!.cantidad}
                           </span>
                           <button
                             onClick={() => actualizarCantidad(
                               `producto-${producto.id_producto}`,
-                              obtenerItemEnCarrito(producto.id_producto)!.cantidad + 1
+                              obtenerItemEnCarrito(producto.id_producto!)!.cantidad + 1
                             )}
                             className="modern-quantity-btn mini">+</button>
                         </div>
