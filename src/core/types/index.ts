@@ -1,6 +1,6 @@
 // types.ts
 export interface Producto {
-  id_producto: number;
+  id_producto?: number;
   nombre: string;
   descripcion: string | null;
   stock: number;
@@ -9,12 +9,13 @@ export interface Producto {
   precio_promocion?: number | null;
   promocion_activa?: boolean;
   estado: boolean;
-  imagenes?: ProductoImagen[]; // Nuevo: múltiples imágenes
-  accesorio?: boolean; // Indica si el producto es un accesorio
-  destacado?: boolean; // Indica si el producto es destacado en la página principal
-  orden_destacado?: number | null; // Orden de visualización en destacados
-  condicion?: 'nuevo' | 'usado_premium' | 'usado'; // Condición del producto
-  dolares?: boolean; // Indica si el precio está en dólares
+  imagenes?: ProductoImagen[]; 
+  accesorio?: boolean; 
+  destacado?: boolean; 
+  orden_destacado?: number | null; 
+  condicion?: 'nuevo' | 'usado_premium' | 'usado'; 
+  dolares?: boolean;
+  categorias?: Categoria[];
 }
 
 export interface ProductoImagen {

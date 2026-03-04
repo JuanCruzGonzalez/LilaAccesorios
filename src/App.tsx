@@ -5,8 +5,7 @@ import { DashboardPage } from './features/dashboard/DashboardPage';
 import './core/styles/toast.css';
 import { Sidebar } from './shared/components/Sidebar';
 import { VentasPage } from './features/ventas/VentasPage';
-import { TelefonosPage } from './features/productos/TelefonosPage';
-import { AccesoriosPage } from './features/productos/AccesoriosPage';
+import ProductosPage from './features/productos/ProductosPage';
 import { ProductosProvider } from './features/productos/context/ProductosContext';
 import { VentasProvider } from './features/ventas/context/VentasContext';
 import { PromocionesProvider } from './features/promociones/context/PromocionesContext';
@@ -79,8 +78,8 @@ function App() {
                       <main className="main-content">
                         {activeSection === 'dashboard' && <DashboardPage />}
                         {activeSection === 'ventas' && <VentasPage />}
-                        {activeSection === 'telefonos' && <TelefonosPage />}
-                        {activeSection === 'accesorios' && <AccesoriosPage />}
+                        {activeSection === 'telefonos' && <ProductosPage accesorio={false} />}
+                        {activeSection === 'accesorios' && <ProductosPage accesorio={true} />}
                         {activeSection === 'stock' && <StockPage />}
                         {activeSection === 'promociones' && <PromocionesPage />}
                         {activeSection === 'gastos' && <GastosPage />}

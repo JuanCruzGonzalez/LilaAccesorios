@@ -1,5 +1,5 @@
 import { supabase, handleAuthError } from '../../../core/config/supabase';
-import { Categoria, CategoriaProducto, CategoriaConHijos } from '../../../core/types';
+import { Categoria, CategoriaProducto, CategoriaConHijos, Producto } from '../../../core/types';
 
 /**
  * Obtener todas las categorías
@@ -188,14 +188,14 @@ export async function getCategoriasDeProducto(id_producto: number): Promise<Cate
  * Primero elimina todas las categorías previas y luego asigna las nuevas
  */
 export async function asignarCategoriasAProducto(
-  id_producto: number,
-  id_categorias: number[]
+  producto: Producto,
+  categorias: Categoria[]
 ) {
   // Eliminar categorías previas
   const { error: deleteError } = await supabase
     .from('categoria_producto')
     .delete()
-    .eq('id_producto', id_producto);
+    .eq('id_producto', producto.id_producto);
 
   if (deleteError) {
     console.error('Error al eliminar categorías previas:', deleteError);
@@ -204,14 +204,14 @@ export async function asignarCategoriasAProducto(
   }
 
   // Si no hay categorías nuevas, terminar aquí
-  if (id_categorias.length === 0) {
+  if (categorias.length === 0) {
     return [];
   }
 
   // Insertar nuevas categorías
-  const inserts = id_categorias.map(id_categoria => ({
-    id_producto,
-    id_categoria,
+  const inserts = categorias.map(categoria => ({
+    id_producto: producto.id_producto,
+    id_categoria: categoria.id_categoria,
   }));
 
   const { data, error } = await supabase

@@ -105,6 +105,10 @@ export const ModalNuevoProducto = React.memo<ModalNuevoProductoProps>(({
       ? parseInt(ordenDestacado) 
       : null;
 
+    const categoriasObjetos = categoriasSeleccionadas
+      .map(id => categorias.find(c => c.id_categoria === id))
+      .filter((cat): cat is Categoria => cat !== undefined);
+
     const productoData = {
       nombre: nombre.trim(),
       descripcion: descripcion.trim(),
@@ -117,12 +121,15 @@ export const ModalNuevoProducto = React.memo<ModalNuevoProductoProps>(({
       condicion: condicion,
       destacado: destacado,
       ordenDestacado: ordenDestacadoFinal,
+      imagenes: imagenes,
+      categorias: categoriasObjetos,
     };
 
     if (initialProduct) {
-      await handleEditarProducto(productoData, imagenes, categoriasSeleccionadas);
+      const productoEditar = { ...productoData, id_producto: initialProduct.id_producto };
+      await handleEditarProducto(productoEditar);
     } else {
-      await handleNuevoProducto(productoData, imagenes, categoriasSeleccionadas);
+      await handleNuevoProducto(productoData);
     }
 
     // Reset form

@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '../../../lib/queryClient';
-import { Producto, ProductoImagen } from '../../../core/types';
+import { Producto } from '../../../core/types';
 import {
   getProductosPage,
   getProductosActivos,
@@ -20,22 +20,6 @@ import { useModal } from '../../../shared/hooks/useModal';
 /** ======================
  * TIPOS E INTERFACES
  * ====================== */
-
-interface ProductoFormData {
-  nombre: string;
-  descripcion: string;
-  stock: number;
-  costo: number;
-  precioventa: number;
-  estado: boolean;
-  promocionActiva?: boolean;
-  precioPromocion?: number | null;
-  accesorio?: boolean;
-  destacado?: boolean;
-  ordenDestacado?: number | null;
-  condicion?: 'nuevo' | 'usado_premium' | 'usado';
-}
-
 interface ProductosContextValue {
   // Estado
   productos: Producto[];
@@ -66,21 +50,15 @@ interface ProductosContextValue {
 
   // Operaciones CRUD
   handleNuevoProducto: (
-    producto: ProductoFormData,
-    imagenes?: ProductoImagen[],
-    categoriasIds?: number[]
+    producto: Producto
   ) => Promise<void>;
   handleBuscarProductos: (texto: string) => Promise<void>;
   handleEditarProducto: (
-    producto: ProductoFormData,
-    imagenes?: ProductoImagen[],
-    categoriasIds?: number[]
+    producto: Producto
   ) => Promise<void>;
   openEditarProducto: (producto: Producto) => Promise<void>;
   handleToggleProductoEstado: (
-    id_producto: number,
-    currentEstado: boolean,
-    nombre?: string
+    producto: Producto
   ) => Promise<void>;
   handleActualizarStock: (productoId: number, cantidad: number) => Promise<void>;
 
@@ -165,12 +143,8 @@ export const ProductosProvider: React.FC<ProductosProviderProps> = ({
   const crearProductoMutation = useMutation({
     mutationFn: async ({
       producto,
-      imagenes,
-      categoriasIds,
     }: {
-      producto: ProductoFormData;
-      imagenes?: ProductoImagen[];
-      categoriasIds?: number[];
+      producto: Producto
     }) => {
       const createdProduct = await createProducto({
         nombre: producto.nombre,
@@ -178,28 +152,28 @@ export const ProductosProvider: React.FC<ProductosProviderProps> = ({
         stock: producto.stock,
         costo: producto.costo,
         precioventa: producto.precioventa,
-        precio_promocion: producto.precioPromocion || null,
-        promocion_activa: producto.promocionActiva || false,
+        precio_promocion: producto.precio_promocion || null,
+        promocion_activa: producto.promocion_activa || false,
         estado: producto.estado,
         accesorio: tipoProductoActual === 'accesorio',
         destacado: producto.destacado || false,
-        orden_destacado: producto.ordenDestacado || null,
+        orden_destacado: producto.orden_destacado || null,
         condicion: producto.condicion || 'nuevo',
       });
 
       // Si hay imágenes, procesarlas
-      if (imagenes && imagenes.length > 0 && createdProduct) {
+      if (producto.imagenes && producto.imagenes.length > 0 && createdProduct) {
         try {
           // Subir las imágenes que son base64 (nuevas)
           const imagenesParaGuardar = await Promise.all(
-            imagenes.map(async (img, index) => {
+            producto.imagenes.map(async (img, index) => {
               // Si la imagen es base64, subirla
               if (img.imagen_path.startsWith('data:')) {
                 // Convertir base64 a file
                 const res = await fetch(img.imagen_path);
                 const blob = await res.blob();
                 const file = new File([blob], `image-${index}.jpg`, { type: 'image/jpeg' });
-                const path = await uploadProductImage(file, createdProduct.id_producto);
+                const path = await uploadProductImage(file, createdProduct.id_producto!);
                 return { imagen_path: path, es_principal: img.es_principal };
               }
               return { imagen_path: img.imagen_path, es_principal: img.es_principal };
@@ -207,16 +181,16 @@ export const ProductosProvider: React.FC<ProductosProviderProps> = ({
           );
           
           // Guardar las imágenes en la tabla producto_imagen
-          await reemplazarImagenesProducto(createdProduct.id_producto, imagenesParaGuardar);
+          await reemplazarImagenesProducto(createdProduct.id_producto!, imagenesParaGuardar);
         } catch (imgErr) {
           showWarning('Producto creado pero no se pudieron subir todas las imágenes');
         }
       }
 
       // Asignar categorías si hay
-      if (createdProduct && categoriasIds && categoriasIds.length > 0) {
+      if (createdProduct && producto.categorias && producto.categorias.length > 0) {
         try {
-          await asignarCategoriasAProducto(createdProduct.id_producto, categoriasIds);
+          await asignarCategoriasAProducto(createdProduct, producto.categorias);
         } catch (catErr) {
           showWarning('Producto creado pero no se pudieron asignar las categorías');
         }
@@ -242,29 +216,25 @@ export const ProductosProvider: React.FC<ProductosProviderProps> = ({
    */
   const editarProductoMutation = useMutation({
     mutationFn: async ({
-      producto,
-      imagenes,
-      categoriasIds,
+      producto
     }: {
-      producto: ProductoFormData;
-      imagenes?: ProductoImagen[];
-      categoriasIds?: number[];
+      producto: Producto
     }) => {
       if (!productToEdit) throw new Error('No hay producto para editar');
 
       // Actualizar datos del producto
-      const updated = await updateProducto(productToEdit.id_producto, {
+      const updated = await updateProducto(productToEdit.id_producto!, {
         nombre: producto.nombre,
         descripcion: producto.descripcion || null,
         stock: producto.stock,
         costo: producto.costo,
         precioventa: producto.precioventa,
-        precio_promocion: producto.precioPromocion || null,
-        promocion_activa: producto.promocionActiva || false,
+        precio_promocion: producto.precio_promocion || null,
+        promocion_activa: producto.promocion_activa || false,
         estado: producto.estado,
         accesorio: productToEdit.accesorio || false, // Mantener el tipo original del producto
         destacado: producto.destacado || false,
-        orden_destacado: producto.ordenDestacado || null,
+        orden_destacado: producto.orden_destacado || null,
         condicion: producto.condicion || 'nuevo',
       });
 
@@ -273,17 +243,17 @@ export const ProductosProvider: React.FC<ProductosProviderProps> = ({
       }
 
       // Procesar imágenes si hay cambios
-      if (imagenes !== undefined) {
+      if (producto.imagenes !== undefined) {
         try {
           // Subir las imágenes que son base64 (nuevas)
           const imagenesParaGuardar = await Promise.all(
-            imagenes.map(async (img, index) => {
+            producto.imagenes.map(async (img, index) => {
               // Si la imagen es base64, subirla
               if (img.imagen_path.startsWith('data:')) {
                 const res = await fetch(img.imagen_path);
                 const blob = await res.blob();
                 const file = new File([blob], `image-${index}.jpg`, { type: 'image/jpeg' });
-                const path = await uploadProductImage(file, productToEdit.id_producto);
+                const path = await uploadProductImage(file, productToEdit.id_producto!);
                 return { imagen_path: path, es_principal: img.es_principal };
               }
               return { imagen_path: img.imagen_path, es_principal: img.es_principal };
@@ -291,16 +261,16 @@ export const ProductosProvider: React.FC<ProductosProviderProps> = ({
           );
           
           // Reemplazar todas las imágenes
-          await reemplazarImagenesProducto(productToEdit.id_producto, imagenesParaGuardar);
+          await reemplazarImagenesProducto(productToEdit.id_producto!, imagenesParaGuardar);
         } catch (imgErr) {
           showWarning('Producto actualizado pero no se pudieron procesar todas las imágenes');
         }
       }
 
       // Actualizar categorías
-      if (categoriasIds !== undefined) {
+      if (producto.categorias !== undefined) {
         try {
-          await asignarCategoriasAProducto(productToEdit.id_producto, categoriasIds);
+          await asignarCategoriasAProducto(productToEdit, producto.categorias);
         } catch (catErr) {
           showWarning('Producto actualizado pero no se pudieron actualizar las categorías');
         }
@@ -397,11 +367,9 @@ export const ProductosProvider: React.FC<ProductosProviderProps> = ({
    */
   const handleNuevoProducto = useCallback(
     async (
-      producto: ProductoFormData,
-      imagenes?: ProductoImagen[],
-      categoriasIds?: number[]
+      producto: Producto
     ) => {
-      await crearProductoMutation.mutateAsync({ producto, imagenes, categoriasIds });
+      await crearProductoMutation.mutateAsync({ producto });
     },
     [crearProductoMutation]
   );
@@ -423,11 +391,9 @@ export const ProductosProvider: React.FC<ProductosProviderProps> = ({
    */
   const handleEditarProducto = useCallback(
     async (
-      producto: ProductoFormData,
-      imagenes?: ProductoImagen[],
-      categoriasIds?: number[]
+      producto: Producto
     ) => {
-      await editarProductoMutation.mutateAsync({ producto, imagenes, categoriasIds });
+      await editarProductoMutation.mutateAsync({ producto });
     },
     [editarProductoMutation]
   );
@@ -440,7 +406,7 @@ export const ProductosProvider: React.FC<ProductosProviderProps> = ({
       setProductToEdit(producto);
       // Cargar categorías del producto
       try {
-        const categoriasData = await getCategoriasDeProducto(producto.id_producto);
+        const categoriasData = await getCategoriasDeProducto(producto.id_producto!);
         setCategoriasDeProducto(categoriasData.map((c: any) => c.id_categoria));
       } catch (err) {
         setCategoriasDeProducto([]);
@@ -463,19 +429,19 @@ export const ProductosProvider: React.FC<ProductosProviderProps> = ({
    * Activa/desactiva un producto con confirmación
    */
   const handleToggleProductoEstado = useCallback(
-    async (id_producto: number, currentEstado: boolean, nombre?: string) => {
+    async (producto: Producto) => {
       showConfirm(
-        currentEstado ? 'Dar de baja producto' : 'Dar de alta producto',
-        `¿Seguro que quieres ${currentEstado ? 'dar de baja' : 'dar de alta'} el producto ${
-          nombre ?? '#' + id_producto
+        producto.estado ? 'Dar de baja producto' : 'Dar de alta producto',
+        `¿Seguro que quieres ${producto.estado ? 'dar de baja' : 'dar de alta'} el producto ${
+          producto.nombre ?? '#' + producto.id_producto
         }?`,
         async () => {
           const updated = await toggleEstadoMutation.mutateAsync({
-            id_producto,
-            newEstado: !currentEstado,
+            id_producto: producto.id_producto!,
+            newEstado: !producto.estado,
           });
           if (!updated) {
-            showError(`No se encontró el producto #${id_producto}`);
+            showError(`No se encontró el producto #${producto.id_producto}`);
           }
         },
         'warning'
