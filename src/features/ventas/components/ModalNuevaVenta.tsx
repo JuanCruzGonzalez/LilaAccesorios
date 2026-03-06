@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { Producto, Promocion } from '../../../core/types';
 import { updateProducto } from '../../productos/services/productoService';
 import { useVentas } from '../context/VentasContext';
@@ -37,6 +37,26 @@ export const ModalNuevaVenta = React.memo<ModalNuevaVentaProps>(({
 
     const productSearchRef = useRef<HTMLDivElement>(null);
     const promoSearchRef = useRef<HTMLDivElement>(null);
+
+    const resetForm = useCallback(() => {
+        setItems([]);
+        setProductoSeleccionado('');
+        setBusquedaProducto('');
+        setShowProductosDropdown(false);
+        setCantidad('');
+        setMetodoPago('efectivo');
+        setPlanConfig(null);
+        setPromoSeleccionada('');
+        setBusquedaPromo('');
+        setShowPromosDropdown(false);
+        setPromoCantidad('1');
+        setPromosAdded([]);
+    }, []);
+
+    const handleCloseModal = useCallback(() => {
+        resetForm();
+        modalNuevaVenta.close();
+    }, [modalNuevaVenta, resetForm]);
 
     // Cerrar dropdowns cuando se hace clic fuera
     useEffect(() => {
@@ -169,16 +189,7 @@ export const ModalNuevaVenta = React.memo<ModalNuevaVentaProps>(({
             : undefined;
 
         handleNuevaVenta([...productosDetalles, ...promocionesDetalles], pagada, planFinal);
-        // Reset
-        setItems([]);
-        setProductoSeleccionado('');
-        setBusquedaProducto('');
-        setCantidad('');
-        setPromosAdded([]);
-        setPromoSeleccionada('');
-        setBusquedaPromo('');
-        setMetodoPago('efectivo');
-        setPlanConfig(null);
+        resetForm();
     };
 
     const agregarPromocion = () => {
@@ -229,7 +240,7 @@ export const ModalNuevaVenta = React.memo<ModalNuevaVentaProps>(({
     };
 
     return (
-        <Modal close={modalNuevaVenta.close} title="Nueva Venta">
+        <Modal close={handleCloseModal} title="Nueva Venta">
                 <div className="modal-minimal-body">
                     <div className="form-group" style={{ position: 'relative' }} ref={productSearchRef}>
                         <label>Buscar Producto</label>
@@ -399,7 +410,7 @@ export const ModalNuevaVenta = React.memo<ModalNuevaVentaProps>(({
                 </div>
 
                 <div className="modal-minimal-footer">
-                    <button className="btn-secondary" onClick={modalNuevaVenta.close} disabled={crearVentaAsync.loading}>Cancelar</button>
+                    <button className="btn-secondary" onClick={handleCloseModal} disabled={crearVentaAsync.loading}>Cancelar</button>
                     <button className="btn-primary" onClick={handleSubmit} disabled={crearVentaAsync.loading}>
                         {crearVentaAsync.loading ? 'Registrando...' : 'Registrar Venta'}
                     </button>
