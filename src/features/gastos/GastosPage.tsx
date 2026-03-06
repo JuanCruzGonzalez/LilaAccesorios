@@ -52,8 +52,8 @@ export const GastosPage: React.FC = () => {
 
       <EstadisticasGrid gastos={gastos} />
 
+      <Filtros filtroEstado={filtroEstado} onFiltroChange={handleFiltroChange} />
       <Card>
-        <Filtros filtroEstado={filtroEstado} onFiltroChange={handleFiltroChange} />
         <div className="table-wrapper">
           <TablaGastos gastosFiltrados={gastosFiltrados} handleEditarGasto={handleEditarGasto} handleToggleGastoEstado={handleToggleGastoEstado} />
         </div>

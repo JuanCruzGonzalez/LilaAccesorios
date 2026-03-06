@@ -5,8 +5,8 @@ interface FiltrosProps {
 
 export default function Filtros({ filtroEstado, onFiltroChange }: FiltrosProps) {
     return (
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', paddingRight: '24px' }}>
-            <div style={{ display: 'flex', gap: '8px', margin: '8px', alignItems: 'center' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
                 <select
                     value={filtroEstado}
                     onChange={(e) => onFiltroChange(e.target.value as 'all' | 'activo' | 'inactivo')}
