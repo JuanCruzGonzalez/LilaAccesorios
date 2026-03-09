@@ -27,6 +27,7 @@ interface PromocionesContextValue {
   promociones: Promocion[];
   promocionesActivas: Promocion[];
   promocionToEdit: PromocionConDetalles | null;
+  setPromocionToEdit: React.Dispatch<React.SetStateAction<PromocionConDetalles | null>>;
   promocionVista: Promocion | null;
   promocionVistaDetalles: any[];
 
@@ -174,6 +175,7 @@ export const PromocionesProvider: React.FC<PromocionesProviderProps> = ({
         }
         await recargarPromociones();
         modalCrearPromocion.close();
+        editarPromocionAsync.reset()
       } catch (err) {
         showError('Error al crear o actualizar la promoción');
       }
@@ -248,6 +250,7 @@ export const PromocionesProvider: React.FC<PromocionesProviderProps> = ({
     promociones,
     promocionesActivas,
     promocionToEdit,
+    setPromocionToEdit,
     promocionVista,
     promocionVistaDetalles,
 

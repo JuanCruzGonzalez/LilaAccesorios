@@ -103,7 +103,7 @@ export async function createPromocion(
     const payload = {
       p_nombre: name,
       p_precio: precio,
-      p_productos: productos,
+      p_productos: JSON.stringify(productos),
       p_estado: estado,
     };
 
@@ -213,7 +213,7 @@ export async function updatePromocion(
       p_id_promocion: id_promocion,
       p_nombre: name,
       p_precio: precio,
-      p_productos: productos,
+      p_productos: JSON.stringify(productos),
       p_estado: estado,
     };
 
@@ -243,7 +243,7 @@ export async function updatePromocion(
     
     return rpcData;
   } catch (e) {
-    // fallback to client-side implementation
+    console.error(e)
   }
 
   // Si hay nueva imagen, actualizarla

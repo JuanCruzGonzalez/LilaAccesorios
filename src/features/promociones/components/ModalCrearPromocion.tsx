@@ -14,6 +14,7 @@ export const ModalCrearPromocion = React.memo<ModalCrearPromocionProps>(({ produ
   const {
     modalCrearPromocion,
     promocionToEdit,
+    setPromocionToEdit,
     handleCrearPromocion,
     crearPromocionAsync,
     editarPromocionAsync,
@@ -29,9 +30,9 @@ export const ModalCrearPromocion = React.memo<ModalCrearPromocionProps>(({ produ
   const [showProductosDropdown, setShowProductosDropdown] = useState(false);
   const [cantidadInput, setCantidadInput] = useState('1');
   const [estado, setEstado] = useState<'1' | '2'>('1');
-  
+
   const productSearchRef = useRef<HTMLDivElement>(null);
-  
+
   // Estados para imagen
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -171,7 +172,23 @@ export const ModalCrearPromocion = React.memo<ModalCrearPromocionProps>(({ produ
       }, 'image/jpeg', 0.95);
     });
   };
-
+  // Función para cerrar el modal y resetear loading
+  const handleCloseModal = () => {
+    modalCrearPromocion.close();
+    crearPromocionAsync.reset();
+    editarPromocionAsync.reset();
+    setPromocionToEdit(null);
+    setName('');
+    setPrecio('');
+    setItems([]);
+    setEstado('1');
+    setImageFile(null);
+    setImagePreview(null);
+    setImageToCrop(null);
+    setShowCropper(false);
+    setBusquedaProducto('');
+    setShowProductosDropdown(false);
+  };
   const handleCropConfirm = async () => {
     if (!imageToCrop || !croppedAreaPixels) return;
 
@@ -181,11 +198,11 @@ export const ModalCrearPromocion = React.memo<ModalCrearPromocionProps>(({ produ
         // Convert blob to File
         const file = new File([croppedBlob], 'cropped-image.jpg', { type: 'image/jpeg' });
         setImageFile(file);
-        
+
         // Create preview
         const previewUrl = URL.createObjectURL(croppedBlob);
         setImagePreview(previewUrl);
-        
+
         setShowCropper(false);
         setImageToCrop(null);
       }
@@ -209,7 +226,7 @@ export const ModalCrearPromocion = React.memo<ModalCrearPromocionProps>(({ produ
       showWarning?.('Por favor selecciona un producto');
       return;
     }
-    
+
     const cant = parseInt(cantidadInput) || 0;
     if (cant <= 0) {
       showWarning?.('Ingrese una cantidad válida');
@@ -220,13 +237,13 @@ export const ModalCrearPromocion = React.memo<ModalCrearPromocionProps>(({ produ
       showWarning?.('Este producto ya está agregado');
       return;
     }
-    
-    setItems(prev => [...prev, { 
-      id_producto: productoSeleccionado.id_producto!, 
-      cantidad: cant, 
-      nombre: productoSeleccionado.nombre, 
+
+    setItems(prev => [...prev, {
+      id_producto: productoSeleccionado.id_producto!,
+      cantidad: cant,
+      nombre: productoSeleccionado.nombre,
     }]);
-    
+
     setProductoSeleccionado(null);
     setBusquedaProducto('');
     setCantidadInput('1');
@@ -254,173 +271,184 @@ export const ModalCrearPromocion = React.memo<ModalCrearPromocionProps>(({ produ
       { name: name.trim(), precio: precioNum, productos: items.map(i => ({ id_producto: i.id_producto, cantidad: i.cantidad })), estado: estado === '1' },
       imageFile
     );
+
+    setName('');
+    setPrecio('');
+    setItems([]);
+    setEstado('1');
+    setImageFile(null);
+    setImagePreview(null);
+    setImageToCrop(null);
+    setShowCropper(false);
+    setBusquedaProducto('');
+    setShowProductosDropdown(false);
   };
 
   return (
-    <Modal close={modalCrearPromocion.close} title={promocionToEdit ? 'Editar Promoción' : 'Crear Nueva Promoción'}>
-        <div className="modal-minimal-body">
-          <div className="form-group">
-            <label>Nombre *</label>
-            <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Nombre de la promoción" />
-          </div>
-          <div className="form-group">
-            <label>Precio (opcional)</label>
-            <input type="number" value={precio} onChange={(e) => setPrecio(e.target.value)} placeholder="Precio de la promoción" />
+    <Modal close={handleCloseModal} title={promocionToEdit ? 'Editar Promoción' : 'Crear Nueva Promoción'}>
+      <div className="modal-minimal-body">
+        <div className="form-group">
+          <label>Nombre *</label>
+          <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Nombre de la promoción" />
+        </div>
+        <div className="form-group">
+          <label>Precio (opcional)</label>
+          <input type="number" value={precio} onChange={(e) => setPrecio(e.target.value)} placeholder="Precio de la promoción" />
+        </div>
+
+        <div className="form-group" style={{ position: 'relative' }} ref={productSearchRef}>
+          <label>Buscar y Agregar Productos</label>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+            <div style={{ flex: 1, position: 'relative' }}>
+              <input
+                type="text"
+                value={busquedaProducto}
+                onChange={(e) => {
+                  setBusquedaProducto(e.target.value);
+                  setShowProductosDropdown(true);
+                }}
+                onFocus={() => setShowProductosDropdown(true)}
+                placeholder="Escribe para buscar productos..."
+                style={{ width: '100%' }}
+              />
+              {showProductosDropdown && busquedaProducto && productosFiltrados.length > 0 && (
+                <div style={{
+                  position: 'absolute',
+                  top: '100%',
+                  left: 0,
+                  right: 0,
+                  backgroundColor: 'white',
+                  border: '1px solid #ddd',
+                  borderRadius: '4px',
+                  maxHeight: '200px',
+                  overflowY: 'auto',
+                  zIndex: 1000,
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                  marginTop: '4px'
+                }}>
+                  {productosFiltrados.map(p => (
+                    <div
+                      key={p.id_producto}
+                      onClick={() => seleccionarProducto(p)}
+                      style={{
+                        padding: '10px 12px',
+                        cursor: 'pointer',
+                        borderBottom: '1px solid #f0f0f0',
+                        fontSize: '14px'
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f5f5f5'}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'white'}
+                    >
+                      <div style={{ fontWeight: 500 }}>{p.nombre}</div>
+                      <div style={{ fontSize: '12px', color: '#666' }}>
+                        Stock: {p.stock} | ${p.precioventa.toFixed(2)}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            <input
+              type="number"
+              min={1}
+              value={cantidadInput}
+              onChange={(e) => setCantidadInput(e.target.value)}
+              placeholder="Cantidad"
+              style={{ width: 100 }}
+            />
+            <button
+              className="btn-secondary"
+              onClick={agregarItem}
+              disabled={loading || !productoSeleccionado}
+            >
+              + Agregar
+            </button>
           </div>
 
-          <div className="form-group" style={{ position: 'relative' }} ref={productSearchRef}>
-            <label>Buscar y Agregar Productos</label>
-            <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
-              <div style={{ flex: 1, position: 'relative' }}>
-                <input
-                  type="text"
-                  value={busquedaProducto}
-                  onChange={(e) => {
-                    setBusquedaProducto(e.target.value);
-                    setShowProductosDropdown(true);
-                  }}
-                  onFocus={() => setShowProductosDropdown(true)}
-                  placeholder="Escribe para buscar productos..."
-                  style={{ width: '100%' }}
-                />
-                {showProductosDropdown && busquedaProducto && productosFiltrados.length > 0 && (
-                  <div style={{
-                    position: 'absolute',
-                    top: '100%',
-                    left: 0,
-                    right: 0,
-                    backgroundColor: 'white',
-                    border: '1px solid #ddd',
-                    borderRadius: '4px',
-                    maxHeight: '200px',
-                    overflowY: 'auto',
-                    zIndex: 1000,
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                    marginTop: '4px'
-                  }}>
-                    {productosFiltrados.map(p => (
-                      <div
-                        key={p.id_producto}
-                        onClick={() => seleccionarProducto(p)}
-                        style={{
-                          padding: '10px 12px',
-                          cursor: 'pointer',
-                          borderBottom: '1px solid #f0f0f0',
-                          fontSize: '14px'
-                        }}
-                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f5f5f5'}
-                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'white'}
-                      >
-                        <div style={{ fontWeight: 500 }}>{p.nombre}</div>
-                        <div style={{ fontSize: '12px', color: '#666' }}>
-                          Stock: {p.stock} | ${p.precioventa.toFixed(2)}
-                        </div>
-                      </div>
-                    ))}
+          {items.length > 0 && (
+            <div style={{ marginTop: 12 }}>
+              <h4>Productos agregados</h4>
+              {items.map(it => (
+                <div key={it.id_producto} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 4px' }}>
+                  <div>
+                    <span>{it.nombre ?? ('#' + it.id_producto)} × </span>
+                    <input type="number" min={1} value={String(it.cantidad)} onChange={(e) => setCantidad(it.id_producto, e.target.value === '' ? 1 : parseInt(e.target.value))} style={{ width: 80 }} />
                   </div>
-                )}
-              </div>
-              <input 
-                type="number" 
-                min={1} 
-                value={cantidadInput} 
-                onChange={(e) => setCantidadInput(e.target.value)} 
-                placeholder="Cantidad"
-                style={{ width: 100 }} 
+                  <div>
+                    <button className="btn-remove" onClick={() => removeItem(it.id_producto)}>Eliminar</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="form-group">
+          <label>Estado</label>
+          <select value={estado} onChange={(e) => setEstado(e.target.value as any)}>
+            <option value="1">Activo</option>
+            <option value="2">Inactivo</option>
+          </select>
+        </div>
+
+        <div className="form-group">
+          <label>Imagen de la Promoción</label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            style={{ display: 'block', marginBottom: '0.5rem' }}
+          />
+          {imagePreview && (
+            <div style={{ marginTop: '0.5rem', position: 'relative', display: 'inline-block' }}>
+              <img
+                src={imagePreview}
+                alt="Preview"
+                style={{ maxWidth: '200px', maxHeight: '200px', borderRadius: '4px', border: '1px solid #ddd' }}
               />
-              <button 
-                className="btn-secondary" 
-                onClick={agregarItem}
-                disabled={loading || !productoSeleccionado}
+              <button
+                type="button"
+                onClick={handleRemoveImage}
+                style={{
+                  position: 'absolute',
+                  top: '5px',
+                  right: '5px',
+                  background: 'rgba(255, 0, 0, 0.8)',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '50%',
+                  width: '24px',
+                  height: '24px',
+                  cursor: 'pointer',
+                  fontSize: '16px',
+                  lineHeight: '1',
+                  padding: '0'
+                }}
               >
-                + Agregar
+                ×
               </button>
             </div>
-
-            {items.length > 0 && (
-              <div style={{ marginTop: 12 }}>
-                <h4>Productos agregados</h4>
-                {items.map(it => (
-                  <div key={it.id_producto} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 4px' }}>
-                    <div>
-                      <span>{it.nombre ?? ('#' + it.id_producto)} × </span>
-                      <input type="number" min={1} value={String(it.cantidad)} onChange={(e) => setCantidad(it.id_producto, e.target.value === '' ? 1 : parseInt(e.target.value))} style={{ width: 80 }} />
-                    </div>
-                    <div>
-                      <button className="btn-remove" onClick={() => removeItem(it.id_producto)}>Eliminar</button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          <div className="form-group">
-            <label>Estado</label>
-            <select value={estado} onChange={(e) => setEstado(e.target.value as any)}>
-              <option value="1">Activo</option>
-              <option value="2">Inactivo</option>
-            </select>
-          </div>
-
-          <div className="form-group">
-            <label>Imagen de la Promoción</label>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-              style={{ display: 'block', marginBottom: '0.5rem' }}
-            />
-            {imagePreview && (
-              <div style={{ marginTop: '0.5rem', position: 'relative', display: 'inline-block' }}>
-                <img 
-                  src={imagePreview} 
-                  alt="Preview" 
-                  style={{ maxWidth: '200px', maxHeight: '200px', borderRadius: '4px', border: '1px solid #ddd' }}
-                />
-                <button
-                  type="button"
-                  onClick={handleRemoveImage}
-                  style={{
-                    position: 'absolute',
-                    top: '5px',
-                    right: '5px',
-                    background: 'rgba(255, 0, 0, 0.8)',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '50%',
-                    width: '24px',
-                    height: '24px',
-                    cursor: 'pointer',
-                    fontSize: '16px',
-                    lineHeight: '1',
-                    padding: '0'
-                  }}
-                >
-                  ×
-                </button>
-              </div>
-            )}
-            {!imagePreview && promocionToEdit?.imagen_path && (
-              <div style={{ marginTop: '0.5rem' }}>
-                <img 
-                  src={getPromocionImageUrl(promocionToEdit.imagen_path) || undefined} 
-                  alt="Imagen actual" 
-                  style={{ maxWidth: '200px', maxHeight: '200px', borderRadius: '4px', border: '1px solid #ddd' }}
-                />
-                <p style={{ fontSize: '0.85rem', color: '#666', marginTop: '0.25rem' }}>Imagen actual (sube una nueva para reemplazar)</p>
-              </div>
-            )}
-          </div>
+          )}
+          {!imagePreview && promocionToEdit?.imagen_path && (
+            <div style={{ marginTop: '0.5rem' }}>
+              <img
+                src={getPromocionImageUrl(promocionToEdit.imagen_path) || undefined}
+                alt="Imagen actual"
+                style={{ maxWidth: '200px', maxHeight: '200px', borderRadius: '4px', border: '1px solid #ddd' }}
+              />
+              <p style={{ fontSize: '0.85rem', color: '#666', marginTop: '0.25rem' }}>Imagen actual (sube una nueva para reemplazar)</p>
+            </div>
+          )}
         </div>
-          <div className="modal-minimal-footer">
-          <button className="btn-secondary" onClick={modalCrearPromocion.close} disabled={loading}>Cancelar</button>
-          <button className="btn-primary" onClick={handleSubmit} disabled={loading}>{loading ? (promocionToEdit ? 'Actualizando...' : 'Guardando...') : (promocionToEdit ? 'Actualizar Promoción' : 'Crear Promoción')}</button>
-        </div>
+      </div>
+      <div className="modal-minimal-footer">
+        <button className="btn-secondary" onClick={modalCrearPromocion.close} disabled={loading}>Cancelar</button>
+        <button className="btn-primary" onClick={handleSubmit} disabled={loading}>{loading ? (promocionToEdit ? 'Actualizando...' : 'Guardando...') : (promocionToEdit ? 'Actualizar Promoción' : 'Crear Promoción')}</button>
+      </div>
 
       {/* Modal de recorte de imagen */}
       {showCropper && imageToCrop && (
-        <ModalRecorteImagen 
+        <ModalRecorteImagen
           imageToCrop={imageToCrop}
           crop={crop}
           zoom={zoom}
