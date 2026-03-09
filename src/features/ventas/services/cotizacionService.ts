@@ -14,7 +14,10 @@ export async function getCotizacionActual(): Promise<number> {
     const { data: rpcData, error: rpcError } = await supabase.rpc('get_cotizacion_actual');
     
     if (!rpcError && rpcData != null) {
-      return Number(rpcData);
+      const valorRpc = Number(rpcData);
+      if (Number.isFinite(valorRpc) && valorRpc > 0) {
+        return valorRpc;
+      }
     }
 
     // Fallback: obtener la última cotización directamente
@@ -31,7 +34,8 @@ export async function getCotizacionActual(): Promise<number> {
       return 1000;
     }
 
-    return data?.valor ?? 1000;
+    const valor = Number(data?.valor);
+    return Number.isFinite(valor) && valor > 0 ? valor : 1000;
   } catch (error) {
     console.error('Error inesperado al obtener cotización actual:', error);
     return 1000;

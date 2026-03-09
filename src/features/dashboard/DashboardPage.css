@@ -224,6 +224,7 @@
 
 .badge-count.danger { background: var(--color-danger); }
 .badge-count.warning { background: var(--color-warning); }
+.badge-count.danger {color: #fff;}
 
 .section-card-body {
   padding: 0;

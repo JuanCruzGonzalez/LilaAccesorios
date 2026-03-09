@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import './DashboardPage.css';
 import { calculateMetricsConDolares } from '../../shared/utils/calculations';
 import { formatCurrency } from '../../shared/utils/formatters';
-import type { VentaConDetalles } from '../../core/types';
+import type { Venta } from '../../core/types';
 import { IconBox, IconCart, IconClock, IconCosto, IconDolar, IconGasto, IconRevenue, IconTrend } from './componentes/iconos';
 import { calcTopProductos, calcVentaTotal, getNombreMes } from './funciones';
 import { useDashboardData } from './queryes';
@@ -29,8 +29,8 @@ export const DashboardPage: React.FC = () => {
     loadingPedidos,
   } = useDashboardData();
 
-  const ventasMes: VentaConDetalles[] = ventasMesData?.ventas ?? [];
-  const ventasHoy: VentaConDetalles[] = ventasHoyData?.ventas ?? [];
+  const ventasMes: Venta[] = ventasMesData?.ventas ?? [];
+  const ventasHoy: Venta[] = ventasHoyData?.ventas ?? [];
 
   const metricsMes = useMemo(
     () => calculateMetricsConDolares(ventasMes, gastosActivos, cotizacion),

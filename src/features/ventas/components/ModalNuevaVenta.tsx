@@ -7,6 +7,7 @@ import ProductosDropDown from '../../stock/componentes/ProductosDropDown';
 import { PromoRow } from './PromoRow';
 import { ProductRow } from './ProductRow';
 import Modal from '../../../shared/components/Modal';
+import { getCotizacionActual } from '../services/cotizacionService';
 
 interface ModalNuevaVentaProps {
     productos: Producto[];
@@ -22,6 +23,7 @@ export const ModalNuevaVenta = React.memo<ModalNuevaVentaProps>(({
     showWarning,
 }) => {
     const { modalNuevaVenta, handleNuevaVenta, crearVentaAsync } = useVentas();
+    const [cotizacionDolar, setCotizacionDolar] = useState<number>(1000);
     const [items, setItems] = useState<{ id_producto: number; cantidad: number; nombre: string; precioventa: number; dolares?: boolean }[]>([]);
     const [productoSeleccionado, setProductoSeleccionado] = useState('');
     const [busquedaProducto, setBusquedaProducto] = useState('');
@@ -100,6 +102,37 @@ export const ModalNuevaVenta = React.memo<ModalNuevaVentaProps>(({
             tieneDolares: totalDolares > 0
         };
     }, [items, promosAdded]);
+
+    const totalMontoPlan = useMemo(() => {
+        return calcularTotales.totalPesos + (calcularTotales.totalDolares * cotizacionDolar);
+    }, [calcularTotales.totalPesos, calcularTotales.totalDolares, cotizacionDolar]);
+
+    useEffect(() => {
+        if (!modalNuevaVenta.isOpen) return;
+
+        let mounted = true;
+
+        const cargarCotizacion = async () => {
+            try {
+                const valor = await getCotizacionActual();
+                const cotizacionSegura = Number.isFinite(valor) && valor > 0 ? valor : 1000;
+                if (mounted) {
+                    setCotizacionDolar(cotizacionSegura);
+                }
+            } catch (error) {
+                console.error('Error al cargar cotizacion actual:', error);
+                if (mounted) {
+                    setCotizacionDolar(1000);
+                }
+            }
+        };
+
+        void cargarCotizacion();
+
+        return () => {
+            mounted = false;
+        };
+    }, [modalNuevaVenta.isOpen]);
 
     if (!modalNuevaVenta.isOpen) return null;
 
@@ -292,7 +325,7 @@ export const ModalNuevaVenta = React.memo<ModalNuevaVentaProps>(({
                     {/* Configuración del plan de pago */}
                     {metodoPago === 'plan_de_pago' && (
                         <PlanDePagoForm
-                            totalMonto={calcularTotales.totalPesos}
+                            totalMonto={totalMontoPlan}
                             onChange={setPlanConfig}
                         />
                     )}
