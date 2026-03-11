@@ -27,6 +27,7 @@ interface ProductosContextValue {
   productosPageNum: number;
   productosTotal: number;
   productosSearchQuery: string;
+  productoVista: Producto | null;
   PAGE_SIZE: number;
   productToEdit: Producto | null;
   categoriasDeProducto: number[];
@@ -39,6 +40,11 @@ interface ProductosContextValue {
     close: () => void;
   };
   modalActualizarStock: {
+    isOpen: boolean;
+    open: () => void;
+    close: () => void;
+  };
+  modalVerProducto: {
     isOpen: boolean;
     open: () => void;
     close: () => void;
@@ -61,6 +67,7 @@ interface ProductosContextValue {
     producto: Producto
   ) => Promise<void>;
   handleActualizarStock: (producto: Producto, cantidad: number) => Promise<void>;
+  handleVerProducto: (producto: Producto) => void;
 
   // Estados de loading (React Query mutations)
   isCreatingProducto: boolean;
@@ -107,11 +114,12 @@ export const ProductosProvider: React.FC<ProductosProviderProps> = ({
   const [productToEdit, setProductToEdit] = useState<Producto | null>(null);
   const [categoriasDeProducto, setCategoriasDeProducto] = useState<number[]>([]);
   const [tipoProductoActual, setTipoProductoActual] = useState<'telefono' | 'accesorio'>('telefono');
+  const [ productoVista, setProductoVista ] = useState<Producto | null>(null);
 
   // Modales
   const modalNuevoProducto = useModal(false);
   const modalActualizarStock = useModal(false);
-
+  const modalVerProducto = useModal(false);
   // ============= QUERIES =============
 
   /**
@@ -421,6 +429,11 @@ export const ProductosProvider: React.FC<ProductosProviderProps> = ({
     setCategoriasDeProducto([]);
     modalNuevoProducto.close();
   }, [modalNuevoProducto]);
+  
+  const closeModalVerProducto = useCallback(() => {
+    setProductoVista(null);
+    modalVerProducto.close();
+  }, [modalVerProducto]);
 
   /**
    * Activa/desactiva un producto con confirmación
@@ -457,6 +470,14 @@ export const ProductosProvider: React.FC<ProductosProviderProps> = ({
     [actualizarStockMutation]
   );
 
+  /**
+   * Abre el modal de ver producto
+   */
+  const handleVerProducto = useCallback((producto: Producto) => {
+    setProductoVista(producto);
+    modalVerProducto.open();
+  }, [modalVerProducto]);
+
   // ============= VALOR DEL CONTEXTO =============
 
   const value: ProductosContextValue = {
@@ -466,6 +487,7 @@ export const ProductosProvider: React.FC<ProductosProviderProps> = ({
     productosPageNum,
     productosTotal: productosQuery.data?.total || 0,
     productosSearchQuery,
+    productoVista,
     PAGE_SIZE,
     productToEdit,
     categoriasDeProducto,
@@ -478,6 +500,11 @@ export const ProductosProvider: React.FC<ProductosProviderProps> = ({
       close: closeModalNuevoProducto,
     },
     modalActualizarStock,
+    modalVerProducto: {
+      isOpen: modalVerProducto.isOpen,
+      open: modalVerProducto.open,
+      close: closeModalVerProducto,
+    },
 
     // Operaciones de carga
     loadProductosPage,
@@ -490,7 +517,7 @@ export const ProductosProvider: React.FC<ProductosProviderProps> = ({
     openEditarProducto,
     handleToggleProductoEstado,
     handleActualizarStock,
-
+    handleVerProducto,
     // Estados de loading (React Query)
     isCreatingProducto: crearProductoMutation.isPending,
     isEditingProducto: editarProductoMutation.isPending,

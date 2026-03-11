@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useDebounce } from '../../shared/hooks/useDebounce';
 import { useProductos } from './context/ProductosContext';
 import { Pagination } from '../../shared/components/Pagination';
@@ -12,6 +12,7 @@ import SelectProductos from './components/selectProductos';
 import TablaProductos from './components/TablaProductos';
 import Buscador from './components/Buscador';
 import EstadisticasGrid from './components/EstadisticasGrid';
+import ModalVerProducto from './components/ModalVerProducto';
 
 export default function ProductosPage({accesorio}: {accesorio: boolean}) {
   const {
@@ -29,8 +30,8 @@ export default function ProductosPage({accesorio}: {accesorio: boolean}) {
 
   const { categorias } = useCategorias();
 
-  const [searchTerm, setSearchTerm] = React.useState('');
-  const [statusFilter, setStatusFilter] = React.useState<'all' | 'active' | 'inactive'>('all');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
 
   const handlerStatusFilterChange = (value: 'all' | 'active' | 'inactive') => {
     setStatusFilter(value);
@@ -91,6 +92,7 @@ export default function ProductosPage({accesorio}: {accesorio: boolean}) {
         categorias={categorias}
       />
       <ModalActualizarStock />
+      <ModalVerProducto />
     </Page>
   );
 };

@@ -2,6 +2,8 @@ import { useMemo } from "react";
 import { Producto } from "../../../core/types";
 import { getProductImageUrl } from "../../../shared/services/storageService";
 import { useProductos } from "../context/ProductosContext";
+import BotonAccion from "../../promociones/components/BotonAccion";
+import { IconVer } from "../../../shared/components/Iconos";
 
 export default function TablaProductos({ productos, openEditarProducto, statusFilter }: { productos: Producto[]; openEditarProducto: (producto: any) => void; statusFilter: 'all' | 'active' | 'inactive'; }) {
     
@@ -13,7 +15,7 @@ export default function TablaProductos({ productos, openEditarProducto, statusFi
         });
     }, [productos, statusFilter]);
 
-    const { handleToggleProductoEstado } = useProductos();
+    const { handleToggleProductoEstado, handleVerProducto } = useProductos();
     return (
         <div className="table-wrapper">
             <table className="table">
@@ -63,6 +65,7 @@ export default function TablaProductos({ productos, openEditarProducto, statusFi
                                         </span>
                                     </td>
                                     <td style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                                        <BotonAccion handle={handleVerProducto} icon={<IconVer/>} p={producto} tipo="ver"/>
                                         <button
                                             className="btn-sm btn-secondary mr-2"
                                             aria-label="Editar"
