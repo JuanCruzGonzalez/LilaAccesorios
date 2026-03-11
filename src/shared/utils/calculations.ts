@@ -1,4 +1,4 @@
-import type { VentaConDetalles, Gasto } from '../../core/types';
+import type { Venta, Gasto, DetalleVenta } from '../../core/types';
 
 export interface CartItem {
   precio: number;
@@ -6,11 +6,11 @@ export interface CartItem {
 }
 
 export const calculateCartTotal = (items: CartItem[]): number => {
-  return items.reduce((total, item) => total + (item.precio * item.cantidad), 0);
+  return items.reduce((total: number, item) => total + (item.precio * item.cantidad), 0);
 };
 
-export const calculateVentaTotal = (venta: VentaConDetalles): number => {
-  return venta.detalle_venta.reduce((total, detalle) => {
+export const calculateVentaTotal = (venta: Venta): number => {
+  return venta.detalle_venta.reduce((total: number, detalle: DetalleVenta) => {
     return total + (detalle.cantidad * detalle.precio_unitario);
   }, 0);
 };
@@ -22,11 +22,11 @@ export interface VentaTotalesPorMoneda {
   tieneDolares: boolean;   // Si hay productos en dólares
 }
 
-export const calculateVentaTotalesPorMoneda = (venta: VentaConDetalles): VentaTotalesPorMoneda => {
+export const calculateVentaTotalesPorMoneda = (venta: Venta): VentaTotalesPorMoneda => {
   let totalPesos = 0;
   let totalDolares = 0;
 
-  venta.detalle_venta.forEach((detalle) => {
+  venta.detalle_venta.forEach((detalle: DetalleVenta) => {
     const subtotal = detalle.cantidad * detalle.precio_unitario;
     const esProductoEnDolares = detalle.producto?.dolares ?? false;
 
@@ -63,7 +63,7 @@ export interface VentasMetricsConDolares extends VentasMetrics {
 }
 
 export const calculateMetrics = (
-  ventas: VentaConDetalles[],
+  ventas: Venta[],
   gastosActivos: Gasto[]
 ): VentasMetrics => {
   let revenue = 0;
@@ -100,7 +100,7 @@ export const calculateMetrics = (
 };
 
 export const calculateMetricsConDolares = (
-  ventas: VentaConDetalles[],
+  ventas: Venta[],
   gastosActivos: Gasto[],
   cotizacionActual: number = 1000
 ): VentasMetricsConDolares => {
@@ -161,7 +161,7 @@ export const calculateMetricsConDolares = (
 export const calculateSubtotal = (
   items: Array<{ cantidad: number; precio?: number | null; precioventa?: number }>
 ): number => {
-  return items.reduce((total, item) => {
+  return items.reduce((total: number, item) => {
     const precio = item.precio ?? item.precioventa ?? 0;
     return total + (item.cantidad * precio);
   }, 0);

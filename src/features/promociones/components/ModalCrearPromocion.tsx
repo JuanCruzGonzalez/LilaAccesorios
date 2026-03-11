@@ -1,9 +1,8 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Producto } from '../../../core/types';
 import { getPromocionImageUrl } from '../../../shared/services/storageService';
 import { usePromociones } from '../context/PromocionesContext';
 import Modal from '../../../shared/components/Modal';
-import ModalRecorteImagen from './ModalRecorteImagen';
 
 interface ModalCrearPromocionProps {
   productos: Producto[];
@@ -36,11 +35,7 @@ export const ModalCrearPromocion = React.memo<ModalCrearPromocionProps>(({ produ
   // Estados para imagen
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [imageToCrop, setImageToCrop] = useState<string | null>(null);
-  const [crop, setCrop] = useState({ x: 0, y: 0 });
-  const [zoom, setZoom] = useState(1);
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
-  const [showCropper, setShowCropper] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     if (!modalCrearPromocion.isOpen) {
@@ -50,8 +45,6 @@ export const ModalCrearPromocion = React.memo<ModalCrearPromocionProps>(({ produ
       setEstado('1');
       setImageFile(null);
       setImagePreview(null);
-      setImageToCrop(null);
-      setShowCropper(false);
       setBusquedaProducto('');
       setShowProductosDropdown(false);
     } else {
@@ -72,6 +65,8 @@ export const ModalCrearPromocion = React.memo<ModalCrearPromocionProps>(({ produ
       }
     }
   }, [modalCrearPromocion.isOpen, promocionToEdit, productos]);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Cerrar dropdowns cuando se hace clic fuera
   useEffect(() => {
@@ -98,79 +93,44 @@ export const ModalCrearPromocion = React.memo<ModalCrearPromocionProps>(({ produ
   };
 
   // Funciones para manejo de imágenes
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      // Validar que sea una imagen
-      if (!file.type.startsWith('image/')) {
-        showWarning?.('Por favor selecciona un archivo de imagen válido');
-        return;
-      }
-      // Validar tamaño (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        showWarning?.('La imagen debe ser menor a 5MB');
-        return;
-      }
-      // Cargar imagen para recorte
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImageToCrop(reader.result as string);
-        setShowCropper(true);
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      showWarning?.('Por favor selecciona un archivo de imagen válido');
+      e.target.value = '';
+      return;
     }
-    // Reset input
-    e.target.value = '';
+    if (file.size > 3 * 1024 * 1024) {
+      showWarning?.('La imagen debe ser menor a 3MB');
+      e.target.value = '';
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const reader = new FileReader();
+      const previewPromise = new Promise<string>((resolve) => {
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.readAsDataURL(file);
+      });
+      const preview = await previewPromise;
+      setImageFile(file);
+      setImagePreview(preview);
+    } catch (error) {
+      console.error('Error al cargar imagen:', error);
+      showWarning?.('Error al cargar la imagen');
+    } finally {
+      setUploading(false);
+      e.target.value = '';
+    }
   };
 
   const handleRemoveImage = () => {
     setImageFile(null);
     setImagePreview(null);
-    setImageToCrop(null);
-    setShowCropper(false);
-  };
-
-  const onCropComplete = useCallback((_croppedArea: any, croppedAreaPixels: any) => {
-    setCroppedAreaPixels(croppedAreaPixels);
-  }, []);
-
-  const createImage = (url: string): Promise<HTMLImageElement> =>
-    new Promise((resolve, reject) => {
-      const image = new Image();
-      image.addEventListener('load', () => resolve(image));
-      image.addEventListener('error', (error) => reject(error));
-      image.src = url;
-    });
-
-  const getCroppedImg = async (imageSrc: string, pixelCrop: any): Promise<Blob | null> => {
-    const image = await createImage(imageSrc);
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-
-    if (!ctx) return null;
-
-    // Set canvas size to square (1:1 ratio)
-    const size = Math.min(pixelCrop.width, pixelCrop.height);
-    canvas.width = size;
-    canvas.height = size;
-
-    ctx.drawImage(
-      image,
-      pixelCrop.x,
-      pixelCrop.y,
-      pixelCrop.width,
-      pixelCrop.height,
-      0,
-      0,
-      size,
-      size
-    );
-
-    return new Promise((resolve) => {
-      canvas.toBlob((blob) => {
-        resolve(blob);
-      }, 'image/jpeg', 0.95);
-    });
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
   // Función para cerrar el modal y resetear loading
   const handleCloseModal = () => {
@@ -184,39 +144,8 @@ export const ModalCrearPromocion = React.memo<ModalCrearPromocionProps>(({ produ
     setEstado('1');
     setImageFile(null);
     setImagePreview(null);
-    setImageToCrop(null);
-    setShowCropper(false);
     setBusquedaProducto('');
     setShowProductosDropdown(false);
-  };
-  const handleCropConfirm = async () => {
-    if (!imageToCrop || !croppedAreaPixels) return;
-
-    try {
-      const croppedBlob = await getCroppedImg(imageToCrop, croppedAreaPixels);
-      if (croppedBlob) {
-        // Convert blob to File
-        const file = new File([croppedBlob], 'cropped-image.jpg', { type: 'image/jpeg' });
-        setImageFile(file);
-
-        // Create preview
-        const previewUrl = URL.createObjectURL(croppedBlob);
-        setImagePreview(previewUrl);
-
-        setShowCropper(false);
-        setImageToCrop(null);
-      }
-    } catch (error) {
-      console.error('Error al recortar imagen:', error);
-      showWarning?.('Error al procesar la imagen');
-    }
-  };
-
-  const handleCropCancel = () => {
-    setShowCropper(false);
-    setImageToCrop(null);
-    setCrop({ x: 0, y: 0 });
-    setZoom(1);
   };
 
   if (!modalCrearPromocion.isOpen) return null;
@@ -278,8 +207,6 @@ export const ModalCrearPromocion = React.memo<ModalCrearPromocionProps>(({ produ
     setEstado('1');
     setImageFile(null);
     setImagePreview(null);
-    setImageToCrop(null);
-    setShowCropper(false);
     setBusquedaProducto('');
     setShowProductosDropdown(false);
   };
@@ -393,51 +320,70 @@ export const ModalCrearPromocion = React.memo<ModalCrearPromocionProps>(({ produ
 
         <div className="form-group">
           <label>Imagen de la Promoción</label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageChange}
-            style={{ display: 'block', marginBottom: '0.5rem' }}
-          />
-          {imagePreview && (
-            <div style={{ marginTop: '0.5rem', position: 'relative', display: 'inline-block' }}>
+          <div style={{ marginTop: '8px' }}>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              disabled={uploading || !!imagePreview}
+              style={{ marginBottom: '12px' }}
+            />
+            {uploading && <p>Cargando imagen...</p>}
+          </div>
+
+          {(imagePreview || (!imagePreview && promocionToEdit?.imagen_path)) && (
+            <div style={{
+              display: 'inline-block',
+              marginTop: '12px',
+              border: '2px solid #4CAF50',
+              borderRadius: '8px',
+              padding: '8px',
+              backgroundColor: '#fff',
+              position: 'relative',
+            }}>
               <img
-                src={imagePreview}
-                alt="Preview"
-                style={{ maxWidth: '200px', maxHeight: '200px', borderRadius: '4px', border: '1px solid #ddd' }}
-              />
-              <button
-                type="button"
-                onClick={handleRemoveImage}
+                src={imagePreview || getPromocionImageUrl(promocionToEdit?.imagen_path ?? null) || ''}
+                alt="Imagen de la promoción"
                 style={{
-                  position: 'absolute',
-                  top: '5px',
-                  right: '5px',
-                  background: 'rgba(255, 0, 0, 0.8)',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '50%',
-                  width: '24px',
-                  height: '24px',
-                  cursor: 'pointer',
-                  fontSize: '16px',
-                  lineHeight: '1',
-                  padding: '0'
+                  width: '150px',
+                  height: '150px',
+                  objectFit: 'cover',
+                  borderRadius: '4px',
+                  display: 'block',
                 }}
-              >
-                ×
-              </button>
+              />
+              <div style={{ marginTop: '8px', display: 'flex', gap: '4px' }}>
+                <span style={{
+                  padding: '4px 8px',
+                  fontSize: '11px',
+                  backgroundColor: '#4CAF50',
+                  color: '#fff',
+                  borderRadius: '4px',
+                }}>Principal</span>
+                <button
+                  type="button"
+                  onClick={handleRemoveImage}
+                  style={{
+                    padding: '4px 8px',
+                    fontSize: '11px',
+                    backgroundColor: '#f44336',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                  }}
+                >
+                  ✕
+                </button>
+              </div>
             </div>
           )}
-          {!imagePreview && promocionToEdit?.imagen_path && (
-            <div style={{ marginTop: '0.5rem' }}>
-              <img
-                src={getPromocionImageUrl(promocionToEdit.imagen_path) || undefined}
-                alt="Imagen actual"
-                style={{ maxWidth: '200px', maxHeight: '200px', borderRadius: '4px', border: '1px solid #ddd' }}
-              />
-              <p style={{ fontSize: '0.85rem', color: '#666', marginTop: '0.25rem' }}>Imagen actual (sube una nueva para reemplazar)</p>
-            </div>
+
+          {!imagePreview && !promocionToEdit?.imagen_path && (
+            <p style={{ color: '#666', fontSize: '14px', marginTop: '8px' }}>
+              No hay imagen cargada
+            </p>
           )}
         </div>
       </div>
@@ -446,19 +392,6 @@ export const ModalCrearPromocion = React.memo<ModalCrearPromocionProps>(({ produ
         <button className="btn-primary" onClick={handleSubmit} disabled={loading}>{loading ? (promocionToEdit ? 'Actualizando...' : 'Guardando...') : (promocionToEdit ? 'Actualizar Promoción' : 'Crear Promoción')}</button>
       </div>
 
-      {/* Modal de recorte de imagen */}
-      {showCropper && imageToCrop && (
-        <ModalRecorteImagen
-          imageToCrop={imageToCrop}
-          crop={crop}
-          zoom={zoom}
-          onCropChange={setCrop}
-          onZoomChange={setZoom}
-          onCropComplete={onCropComplete}
-          handleCropCancel={handleCropCancel}
-          handleCropConfirm={handleCropConfirm}
-        />
-      )}
     </Modal>
   );
 });
