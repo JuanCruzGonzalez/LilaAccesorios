@@ -493,3 +493,43 @@ export async function updateProductoEstado(id_producto: number, activo: boolean)
 
   return producto;
 }
+
+/**
+ * Bulk-create products from an Excel import.
+ * Rows with missing required fields (nombre, costo, precioventa) are skipped.
+ * Returns the number of successfully inserted rows.
+ */
+export async function bulkCreateProductos(
+  rows: Partial<Producto>[],
+): Promise<number> {
+  const valid = rows
+    .filter(r => r.nombre && r.costo != null && r.precioventa != null)
+    .map(r => ({
+      nombre: r.nombre!,
+      descripcion: r.descripcion ?? null,
+      stock: Number(r.stock ?? 0),
+      costo: Number(r.costo),
+      precioventa: Number(r.precioventa),
+      precio_promocion: r.precio_promocion != null ? Number(r.precio_promocion) : null,
+      promocion_activa: r.promocion_activa ?? false,
+      estado: r.estado ?? true,
+      accesorio: r.accesorio ?? false,
+      destacado: r.destacado ?? false,
+      orden_destacado: r.orden_destacado ?? null,
+      condicion: (r.condicion as Producto['condicion']) ?? 'nuevo',
+      dolares: r.dolares ?? false,
+    }));
+
+  if (!valid.length) return 0;
+
+  const { data, error } = await supabase
+    .from('producto')
+    .insert(valid)
+    .select('id_producto');
+
+  if (error) {
+    await handleAuthError(error);
+    throw error;
+  }
+  return (data || []).length;
+}

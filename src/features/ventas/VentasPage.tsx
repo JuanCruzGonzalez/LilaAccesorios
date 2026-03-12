@@ -17,6 +17,30 @@ import TablaVentas from './components/TablaVentas';
 import ModalVentaDetalle from './components/ModalVentaDetalle';
 import Filtros from './components/Filtros';
 import { Venta } from '../../core/types';
+import { ExcelActions } from '../../shared/components/ExcelActions';
+import { buscarVentas } from './services/ventaService';
+import { ExcelColumn } from '../../shared/utils/excel';
+
+const VENTAS_COLUMNS: ExcelColumn<Venta>[] = [
+  { key: 'id_venta', header: 'ID', exportOnly: true, width: 8 },
+  { key: 'fecha', header: 'Fecha', width: 14 },
+  { key: 'estado', header: 'Estado', width: 12, exportOnly: true, format: v => (v ? 'Pagada' : 'Pendiente') },
+  { key: 'baja', header: 'Baja', width: 8, exportOnly: true, format: v => (v ? 'Sí' : 'No') },
+  { key: 'metodo_pago', header: 'Método Pago', width: 16 },
+  {
+    key: 'total',
+    header: 'Total',
+    width: 14,
+    exportOnly: true,
+    format: (v, row) =>
+      v != null
+        ? v
+        : (row.detalle_venta || []).reduce(
+          (acc: number, d: any) => acc + (d.precio_unitario ?? 0) * (d.cantidad ?? 1),
+          0,
+        ),
+  },
+];
 
 export const VentasPage: React.FC = () => {
   const {
@@ -79,13 +103,23 @@ export const VentasPage: React.FC = () => {
   return (
     <Page>
       <PageHeader funcion={modalNuevaVenta.open} textButton='Nueva Venta' title='Ventas' subtitle='Gestiona el historial de ventas' />
-      <button
-        className="btn-secondary btn-dollar"
-        onClick={modalCotizacion.open}
-        title="Gestionar cotización del dólar"
-      >
-        💵 Dólar
-      </button>
+      <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', marginBottom: 8 }}>
+        <button
+          className="btn-secondary btn-dollar"
+          onClick={modalCotizacion.open}
+          title="Gestionar cotización del dólar"
+        >
+          💵 Dólar
+        </button>
+      </div>
+      <ExcelActions<Venta>
+        data={ventas}
+        columns={VENTAS_COLUMNS}
+        sheetName="Ventas"
+        fileName="ventas"
+        onFetchAll={async () => (await buscarVentas(opts)) as Venta[]}
+        disableImport
+      />
 
       {/* Tabs */}
       <div style={{ display: 'flex', gap: 0, borderBottom: '2px solid #e5e7eb', marginBottom: 16 }}>

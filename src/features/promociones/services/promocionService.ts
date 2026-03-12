@@ -349,3 +349,33 @@ export async function deletePromocion(id_promocion: number, estado: boolean) {
     throw err;
   }
 }
+
+/**
+ * Bulk-create promotions from an Excel import (name + precio + estado only).
+ * Rows without a name are skipped.
+ * Returns the number of successfully inserted rows.
+ */
+export async function bulkCreatePromociones(
+  rows: { name?: string; precio?: number | null; estado?: boolean }[],
+): Promise<number> {
+  const valid = rows
+    .filter(r => r.name && r.name.trim())
+    .map(r => ({
+      name: r.name!.trim(),
+      precio: r.precio != null ? Number(r.precio) : null,
+      estado: r.estado ?? true,
+    }));
+
+  if (!valid.length) return 0;
+
+  const { data, error } = await supabase
+    .from('promocion')
+    .insert(valid)
+    .select('id_promocion');
+
+  if (error) {
+    await handleAuthError(error);
+    throw error;
+  }
+  return (data || []).length;
+}

@@ -245,3 +245,33 @@ export async function getProductosDeCategoria(id_categoria: number): Promise<num
 
   return (data || []).map((item: any) => item.id_producto);
 }
+
+/**
+ * Bulk-create categories from an Excel import.
+ * Rows without a nombre are skipped.
+ * Returns the number of successfully inserted rows.
+ */
+export async function bulkCreateCategorias(
+  rows: { nombre?: string; estado?: boolean; id_categoria_padre?: number | null }[],
+): Promise<number> {
+  const valid = rows
+    .filter(r => r.nombre && r.nombre.trim())
+    .map(r => ({
+      nombre: r.nombre!.trim(),
+      estado: r.estado ?? true,
+      id_categoria_padre: r.id_categoria_padre ?? null,
+    }));
+
+  if (!valid.length) return 0;
+
+  const { data, error } = await supabase
+    .from('categoria')
+    .insert(valid)
+    .select('id_categoria');
+
+  if (error) {
+    await handleAuthError(error);
+    throw error;
+  }
+  return (data || []).length;
+}

@@ -274,28 +274,38 @@ export const VentasProvider: React.FC<VentasProviderProps> = ({
    */
   const handleNuevaVenta = useCallback(
     async (items: DetalleVentaInput[], pagada: boolean, planConfig?: PlanDePagoConfig) => {
+      const fecha = getTodayISO();
+      let idVenta: number | undefined;
       try {
-        const fecha = getTodayISO();
-        const idVenta = await crearVentaAsync.execute(() => createVenta(fecha, items, pagada));
-
+        idVenta = await crearVentaAsync.execute(() => createVenta(fecha, items, pagada));
         if (planConfig && idVenta) {
           await updateVentaMetodoPago(idVenta, 'plan_de_pago');
-          await createPlanDePago({
-            id_venta: idVenta,
-            id_cliente: planConfig.id_cliente,
-            cliente_nombre: planConfig.cliente_nombre,
-            cliente_telefono: planConfig.cliente_telefono,
-            numero_cuotas: planConfig.numero_cuotas,
-            monto_total: planConfig.monto_total,
-            monto_cuota: Math.round((planConfig.monto_total / planConfig.numero_cuotas) * 100) / 100,
-          });
-          await recargarPlanes();
+          try {
+          console.log(planConfig)
+            await createPlanDePago({
+              id_venta: idVenta,
+              id_cliente: planConfig.id_cliente,
+              cliente_nombre: planConfig.cliente_nombre,
+              cliente_telefono: planConfig.cliente_telefono,
+              numero_cuotas: planConfig.numero_cuotas,
+              monto_total: planConfig.monto_total,
+              monto_cuota: Math.round((planConfig.monto_total / planConfig.numero_cuotas) * 100) / 100,
+            });
+            await recargarPlanes();
+          } catch (planErr) {
+            // Si falla el plan, revertir la venta
+            await updateVentaBaja(idVenta, true); // Marca la venta como baja
+            showErrorRef.current('Error al crear el plan de pago. La venta fue revertida.');
+            await recargarVentasActuales();
+            modalNuevaVenta.close();
+            return;
+          }
         }
-
         await recargarVentasActuales();
         modalNuevaVenta.close();
         showSuccessRef.current(planConfig ? 'Venta con plan de pago registrada' : 'Venta registrada exitosamente');
       } catch (err) {
+        // Si falla la venta, no se crea nada
         showErrorRef.current('Error al registrar la venta');
       }
     },

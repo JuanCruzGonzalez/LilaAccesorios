@@ -26,6 +26,7 @@ export const PlanDePagoForm: React.FC<Props> = ({ totalMonto, onChange }) => {
   const [nombre, setNombre] = useState('');
   const [telefono, setTelefono] = useState('');
   const [numCuotas, setNumCuotas] = useState(3);
+  const [numValorInteres, setNumValorInteres] = useState(0);
   const [showDropdown, setShowDropdown] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
 
@@ -38,7 +39,7 @@ export const PlanDePagoForm: React.FC<Props> = ({ totalMonto, onChange }) => {
       numero_cuotas: numCuotas,
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [nombre, telefono, numCuotas, clienteSeleccionado]);
+  }, [nombre, telefono, numCuotas, clienteSeleccionado, totalMonto]);
 
   // Cerrar dropdown al hacer clic fuera
   useEffect(() => {
@@ -50,6 +51,7 @@ export const PlanDePagoForm: React.FC<Props> = ({ totalMonto, onChange }) => {
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, []);
+  
 
   const handleBuscar = async (q: string) => {
     setBusqueda(q);
@@ -80,8 +82,11 @@ export const PlanDePagoForm: React.FC<Props> = ({ totalMonto, onChange }) => {
     setTelefono('');
   };
 
+  // Calcular el monto total con interés
+  const montoTotalConInteres = totalMonto + (totalMonto * numValorInteres / 100);
+  // Calcular el valor de cada cuota
   const montoCuota = numCuotas > 0
-    ? Math.round((totalMonto / numCuotas) * 100) / 100
+    ? Math.round((montoTotalConInteres / numCuotas) * 100) / 100
     : 0;
 
   return (
@@ -153,10 +158,21 @@ export const PlanDePagoForm: React.FC<Props> = ({ totalMonto, onChange }) => {
             style={inputStyle}
           />
         </div>
+        <div className="form-group" style={{ flex: 1 }}>
+          <label style={{ fontSize: 13 }}>Interes %<span style={{ color: 'red' }}>*</span></label>
+          <input
+            type="number"
+            min={2}
+            max={24}
+            value={numValorInteres}
+            onChange={e => setNumValorInteres(Number(e.target.value))}
+            style={inputStyle}
+          />
+        </div>
         <div style={{ flex: 1, textAlign: 'center', background: '#fff', borderRadius: 6, padding: '8px 12px', border: '1px solid #ddd', marginBottom: 0 }}>
           <div style={{ fontSize: 11, color: '#888' }}>Por cuota</div>
           <div style={{ fontWeight: 700, fontSize: 18, color: '#92610c' }}>${montoCuota.toFixed(2)}</div>
-          <div style={{ fontSize: 10, color: '#aaa' }}>de ${totalMonto.toFixed(2)} total</div>
+          <div style={{ fontSize: 10, color: '#aaa' }}>de ${montoTotalConInteres.toFixed(2)} total</div>
         </div>
       </div>
     </div>

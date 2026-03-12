@@ -10,6 +10,20 @@ import { Empleado } from '../../core/types';
 import Page from '../../shared/components/Page';
 import Card from '../../shared/components/Card';
 import PageHeader from '../../shared/components/PageHeader';
+import { ExcelActions } from '../../shared/components/ExcelActions';
+import { getEmpleados } from './services/empleadoService';
+import { ExcelColumn } from '../../shared/utils/excel';
+
+const EMPLEADOS_COLUMNS: ExcelColumn<Empleado>[] = [
+  { key: 'user_id', header: 'ID', exportOnly: true, width: 36 },
+  { key: 'nombre', header: 'Nombre', width: 20 },
+  { key: 'apellido', header: 'Apellido', width: 20 },
+  { key: 'email', header: 'Email', width: 30 },
+  { key: 'dni', header: 'DNI', width: 14 },
+  { key: 'fecha_nacimiento', header: 'Fecha Nacimiento', width: 18 },
+  { key: 'estado', header: 'Estado', width: 12 },
+  { key: 'created_at', header: 'Fecha Creación', width: 22, exportOnly: true, format: v => (v ? v.split('T')[0] : '') },
+];
 
 const EmpleadosPage: React.FC = () => {
   const { user } = useAuth();
@@ -29,6 +43,15 @@ const EmpleadosPage: React.FC = () => {
   return (
     <Page>
       <PageHeader funcion={handleNuevoEmpleado} textButton='Nuevo Empleado' title='Empleados' subtitle='Gestion de empleados de la empresa' />
+      <ExcelActions<Empleado>
+        data={empleadosOrdenados}
+        columns={EMPLEADOS_COLUMNS}
+        sheetName="Empleados"
+        fileName="empleados"
+        onFetchAll={getEmpleados}
+        disableImport
+        exportLabel="Exportar Excel"
+      />
       <Card>
         {isLoading && <p>Cargando empleados...</p>}
         {!isLoading &&  (

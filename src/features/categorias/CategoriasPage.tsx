@@ -9,6 +9,18 @@ import Filtros from './components/Filtros';
 import Card from '../../shared/components/Card';
 import TableCategorias from './components/TableCategorias';
 import H1 from '../../shared/components/H1';
+import { ExcelActions } from '../../shared/components/ExcelActions';
+import { ExcelColumn } from '../../shared/utils/excel';
+import { bulkCreateCategorias, getCategorias } from './services/categoriaService';
+import { useToast } from '../../shared/hooks/useToast';
+import { Categoria } from '../../core/types';
+
+const CATEGORIAS_COLUMNS: ExcelColumn<Categoria>[] = [
+  { key: 'id_categoria', header: 'ID', exportOnly: true, width: 8 },
+  { key: 'nombre', header: 'Nombre', width: 30 },
+  { key: 'estado', header: 'Estado', width: 10, format: v => (v ? 'Activo' : 'Inactivo'), parseImport: v => String(v).toLowerCase() === 'activo' || v === true || v === 1 },
+  { key: 'id_categoria_padre', header: 'ID Categoría Padre', width: 20, parseImport: v => (v ? Number(v) : null) },
+];
 
 export const CategoriasPage: React.FC = () => {
   const {
@@ -21,6 +33,7 @@ export const CategoriasPage: React.FC = () => {
     handleToggleCategoriaEstado,
     handleSubmitCategoria
   } = useCategorias();
+  const { showSuccess, showError } = useToast();
   const [filtroEstado, setFiltroEstado] = useState<'all' | 'activo' | 'inactivo'>('all');
 
   if (isLoading) {
@@ -47,16 +60,33 @@ export const CategoriasPage: React.FC = () => {
           <H1 texto="Categorías" />
           <p className="page-subtitle">Gestiona las categorías de productos</p>
         </div>
-        <button className="btn-primary" onClick={handleNuevaCategoria}>
-          + Nueva Categoría
-        </button>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+          <button className="btn-primary" onClick={handleNuevaCategoria}>
+            + Nueva Categoría
+          </button>
+        </div>
       </div>
+      <ExcelActions<Categoria>
+        data={categorias}
+        columns={CATEGORIAS_COLUMNS}
+        sheetName="Categorías"
+        fileName="categorias"
+        onFetchAll={getCategorias}
+        onImport={async rows => {
+          try {
+            const n = await bulkCreateCategorias(rows);
+            showSuccess(`${n} categoría(s) importada(s) correctamente`);
+          } catch {
+            showError('Error al importar categorías');
+          }
+        }}
+      />
 
       <Estadisticas categorias={categorias} categoriasActivas={categoriasActivas} />
 
       <Filtros filtroEstado={filtroEstado} handleFiltroChange={handleFiltroChange} />
       <Card>
-        <TableCategorias categoriasFiltradas={categoriasFiltradas} handleEditarCategoria={handleEditarCategoria} handleToggleCategoriaEstado={handleToggleCategoriaEstado}/>
+        <TableCategorias categoriasFiltradas={categoriasFiltradas} handleEditarCategoria={handleEditarCategoria} handleToggleCategoriaEstado={handleToggleCategoriaEstado} />
       </Card>
 
 

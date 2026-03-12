@@ -13,8 +13,28 @@ import TablaProductos from './components/TablaProductos';
 import Buscador from './components/Buscador';
 import EstadisticasGrid from './components/EstadisticasGrid';
 import ModalVerProducto from './components/ModalVerProducto';
+import { ExcelActions } from '../../shared/components/ExcelActions';
+import { ExcelColumn } from '../../shared/utils/excel';
+import { bulkCreateProductos, getProductos } from './services/productoService';
+import { useToast } from '../../shared/hooks/useToast';
+import { Producto } from '../../core/types';
 
-export default function ProductosPage({accesorio}: {accesorio: boolean}) {
+const PRODUCTOS_COLUMNS: ExcelColumn<Producto>[] = [
+  { key: 'id_producto', header: 'ID', exportOnly: true, width: 8 },
+  { key: 'nombre', header: 'Nombre', width: 30 },
+  { key: 'descripcion', header: 'Descripción', width: 40 },
+  { key: 'stock', header: 'Stock', width: 10, parseImport: Number },
+  { key: 'costo', header: 'Costo', width: 12, parseImport: Number },
+  { key: 'precioventa', header: 'Precio Venta', width: 14, parseImport: Number },
+  { key: 'precio_promocion', header: 'Precio Promocional', width: 20, parseImport: v => (v != null && v !== '' ? Number(v) : null) },
+  { key: 'estado', header: 'Estado', width: 10, format: v => (v ? 'Activo' : 'Inactivo'), parseImport: v => String(v).toLowerCase() === 'activo' || v === true || v === 1 },
+  { key: 'condicion', header: 'Condición', width: 16 },
+  { key: 'accesorio', header: 'Accesorio', width: 12, format: v => (v ? 'Sí' : 'No'), parseImport: v => ['sí', 'si', 'yes', '1', 1, true].includes(typeof v === 'string' ? v.toLowerCase() : v) },
+  { key: 'destacado', header: 'Destacado', width: 12, format: v => (v ? 'Sí' : 'No'), parseImport: v => ['sí', 'si', 'yes', '1', 1, true].includes(typeof v === 'string' ? v.toLowerCase() : v) },
+  { key: 'dolares', header: 'En USD', width: 10, format: v => (v ? 'Sí' : 'No'), parseImport: v => ['sí', 'si', 'yes', '1', 1, true].includes(typeof v === 'string' ? v.toLowerCase() : v) },
+];
+
+export default function ProductosPage({ accesorio }: { accesorio: boolean }) {
   const {
     productos,
     productosTotal,
@@ -29,6 +49,7 @@ export default function ProductosPage({accesorio}: {accesorio: boolean}) {
   } = useProductos();
 
   const { categorias } = useCategorias();
+  const { showSuccess, showError } = useToast();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
@@ -65,9 +86,25 @@ export default function ProductosPage({accesorio}: {accesorio: boolean}) {
         </button>
       </div>
 
-      <EstadisticasGrid productosTotal={productosTotal} stockBajo={stockBajo} accesorio={accesorio}/>
+      <ExcelActions<Producto>
+        data={productos}
+        columns={PRODUCTOS_COLUMNS}
+        sheetName="Productos"
+        fileName={accesorio ? 'accesorios' : 'telefonos'}
+        onFetchAll={async () => (await getProductos()).filter(p => p.accesorio === accesorio)}
+        onImport={async rows => {
+          try {
+            const n = await bulkCreateProductos(rows);
+            showSuccess(`${n} producto(s) importado(s) correctamente`);
+            loadProductosPage(1);
+          } catch {
+            showError('Error al importar productos');
+          }
+        }}
+      />
+      <EstadisticasGrid productosTotal={productosTotal} stockBajo={stockBajo} accesorio={accesorio} />
 
-      <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+      <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
         <Buscador searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
         <SelectProductos statusFilter={statusFilter} handlerStatusFilterChange={handlerStatusFilterChange} />
       </div>

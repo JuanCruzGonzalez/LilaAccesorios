@@ -24,7 +24,7 @@ export const ModalNuevaVenta = React.memo<ModalNuevaVentaProps>(({
 }) => {
     const { modalNuevaVenta, handleNuevaVenta, crearVentaAsync } = useVentas();
     const [cotizacionDolar, setCotizacionDolar] = useState<number>(1000);
-    const [items, setItems] = useState<{ id_producto: number; cantidad: number; nombre: string; precioventa: number; dolares?: boolean }[]>([]);
+    const [items, setItems] = useState<{ id_producto: number; cantidad: number; nombre: string; precioventa: number; dolares?: boolean; preciopromocional?: number }[]>([]);
     const [productoSeleccionado, setProductoSeleccionado] = useState('');
     const [busquedaProducto, setBusquedaProducto] = useState('');
     const [showProductosDropdown, setShowProductosDropdown] = useState(false);
@@ -57,6 +57,7 @@ export const ModalNuevaVenta = React.memo<ModalNuevaVentaProps>(({
 
     const handleCloseModal = useCallback(() => {
         resetForm();
+        crearVentaAsync.reset();
         modalNuevaVenta.close();
     }, [modalNuevaVenta, resetForm]);
 
@@ -82,7 +83,7 @@ export const ModalNuevaVenta = React.memo<ModalNuevaVentaProps>(({
 
         // Sumar productos
         items.forEach(item => {
-            const subtotal = item.cantidad * item.precioventa;
+            const subtotal = item.cantidad * (item.preciopromocional && item.preciopromocional>0 ? item.preciopromocional : item.precioventa);
             if (item.dolares) {
                 totalDolares += subtotal;
             } else {
@@ -186,6 +187,7 @@ export const ModalNuevaVenta = React.memo<ModalNuevaVentaProps>(({
             nombre: producto.nombre,
             precioventa: producto.precioventa,
             dolares: producto.dolares,
+            preciopromocional: producto.precio_promocion || 0,
         }]);
         setProductoSeleccionado('');
         setBusquedaProducto('');
@@ -207,10 +209,6 @@ export const ModalNuevaVenta = React.memo<ModalNuevaVentaProps>(({
                 showWarning?.('El plan debe tener al menos 2 cuotas');
                 return;
             }
-            if (calcularTotales.totalPesos <= 0) {
-                showWarning?.('El plan de pago solo aplica a productos en pesos (ARS)');
-                return;
-            }
         }
 
         const productosDetalles = items.map(i => ({ id_producto: i.id_producto, cantidad: i.cantidad, precioUnitario: i.precioventa }));
@@ -220,7 +218,6 @@ export const ModalNuevaVenta = React.memo<ModalNuevaVentaProps>(({
         const planFinal = metodoPago === 'plan_de_pago' && planConfig
             ? { ...planConfig, monto_total: calcularTotales.totalPesos }
             : undefined;
-
         handleNuevaVenta([...productosDetalles, ...promocionesDetalles], pagada, planFinal);
         resetForm();
     };
@@ -248,11 +245,15 @@ export const ModalNuevaVenta = React.memo<ModalNuevaVentaProps>(({
         setPromosAdded(prev => prev.filter(p => p.id_promocion !== id_promocion));
     };
 
-    const updateProductPrice = async (id_producto: number, newPrice: number) => {
+    const updateProductPrice = async (id_producto: number, newPrice: number, promocion?: boolean) => {
         setItems(prev => prev.map(it => it.id_producto === id_producto ? { ...it, precioventa: newPrice } : it));
 
         try {
-            await updateProducto(id_producto, { precioventa: newPrice });
+            if(promocion){
+                await updateProducto(id_producto, { precio_promocion: newPrice });
+            }else{
+                await updateProducto(id_producto, { precioventa: newPrice });
+            }
             // Precio actualizado silenciosamente en la base de datos
         } catch (error) {
             showError?.('Error al actualizar el precio en la base de datos');

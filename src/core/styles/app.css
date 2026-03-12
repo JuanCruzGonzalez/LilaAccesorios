@@ -294,6 +294,182 @@ input {
   background: var(--color-bg);
 }
 
+/* ============================================
+   EXCEL ACTIONS
+   ============================================ */
+.excel-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 10px 0;
+}
+
+.btn-excel-export,
+.btn-excel-import,
+.btn-excel-template {
+  border: none;
+  padding: 8px 14px;
+  border-radius: var(--border-radius);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+  white-space: nowrap;
+}
+
+.btn-excel-export {
+  background: #16a34a;
+  color: #fff;
+}
+
+.btn-excel-export:hover {
+  background: #15803d;
+}
+
+.btn-excel-import {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.btn-excel-import:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+}
+
+.btn-excel-import:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-excel-template {
+  background: var(--color-bg);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+}
+
+.btn-excel-template:hover {
+  background: var(--color-border);
+}
+
+/* ── Export Options Modal ────────────────────── */
+.excel-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.excel-modal {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  width: 360px;
+  max-width: calc(100vw - 32px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+}
+
+.excel-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.excel-modal-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.excel-modal-close {
+  background: none;
+  border: none;
+  font-size: 22px;
+  line-height: 1;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  padding: 0 4px;
+  border-radius: 4px;
+  transition: var(--transition);
+}
+
+.excel-modal-close:hover {
+  color: var(--color-text);
+  background: var(--color-border);
+}
+
+.excel-modal-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.excel-modal-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.excel-modal-option input[type='radio'] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--color-primary);
+  cursor: pointer;
+}
+
+.excel-modal-count {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.excel-modal-range {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: 26px;
+  flex-wrap: wrap;
+}
+
+.excel-modal-range-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.excel-modal-range-input {
+  width: 72px;
+  padding: 5px 8px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-size: 13px;
+}
+
+.excel-modal-range-sep {
+  color: var(--color-text-muted);
+  font-size: 16px;
+}
+
+.excel-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 14px 20px;
+  border-top: 1px solid var(--color-border);
+}
+
 .btn-remove {
   background: none;
   border: none;

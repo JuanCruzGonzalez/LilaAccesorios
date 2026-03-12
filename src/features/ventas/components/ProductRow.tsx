@@ -1,8 +1,8 @@
 import React from "react";
 
 export const ProductRow = React.memo<{
-    item: { id_producto: number; cantidad: number; nombre: string; precioventa: number; dolares?: boolean };
-    onUpdatePrice: (id_producto: number, newPrice: number) => void;
+    item: { id_producto: number; cantidad: number; nombre: string; precioventa: number; dolares?: boolean, preciopromocional?: number };
+    onUpdatePrice: (id_producto: number, newPrice: number, promocion: boolean) => void;
     onRemove: (id_producto: number) => void;
     onChangeCantidad: (id_producto: number, cantidad: number) => void;
 }>(({ item, onUpdatePrice, onRemove, onChangeCantidad }) => {
@@ -18,7 +18,7 @@ export const ProductRow = React.memo<{
                         </span>
                     )}
                     <span style={{ marginLeft: 8, color: '#666', display: 'flex', alignItems: 'center', gap: 4 }}>
-                        <span>Precio: </span>
+                        <span>{item.preciopromocional && item.preciopromocional>0 ? 'Precio Promocional' : 'Precio:'}</span>
                         <input
                             style={{
                                 width: '70px',
@@ -29,10 +29,10 @@ export const ProductRow = React.memo<{
                                 padding: '2px 6px',
                             }}
                             type="number"
-                            value={String(item.precioventa)}
+                            value={String(item.preciopromocional && item.preciopromocional>0 ? item.preciopromocional : item.precioventa)}
                             onChange={(e) => {
                                 const val = e.target.value === '' ? 0 : parseFloat(e.target.value);
-                                onUpdatePrice(item.id_producto, val);
+                                onUpdatePrice(item.id_producto, val, item.preciopromocional && item.preciopromocional>0 ? true : false );
                             }}
                             min="0"
                         />
@@ -59,7 +59,7 @@ export const ProductRow = React.memo<{
                         <button type="button" className="qty-button" onClick={() => onChangeCantidad(item.id_producto, item.cantidad + 1)}>+</button>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
                             <span style={{ fontWeight: 'bold', width: 'fit-content' }}>
-                                ${(item.cantidad * item.precioventa).toFixed(2)}{esDolares ? ' USD' : ''}
+                                ${(item.cantidad * (item.preciopromocional && item.preciopromocional>0 ? item.preciopromocional : item.precioventa)).toFixed(2)}{esDolares ? ' USD' : ''}
                             </span>
                             <button className="btn-remove" onClick={() => onRemove(item.id_producto)}>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
