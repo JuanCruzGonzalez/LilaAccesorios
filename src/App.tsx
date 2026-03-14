@@ -26,7 +26,7 @@ import ClientesPage from './features/clientes/ClientesPage';
 import { ClientesProvider } from './features/clientes/context/ClientesContext';
 
 function App() {
-  const [activeSection, setActiveSection] = useState<'dashboard' | 'ventas' | 'telefonos' | 'accesorios' | 'stock' | 'promociones' | 'gastos' | 'categorias' | 'pedidos' | 'empleados' | 'clientes'>('dashboard');
+  const [activeSection, setActiveSection] = useState<'dashboard' | 'ventas' | 'accesorios' | 'stock' | 'promociones' | 'gastos' | 'categorias' | 'pedidos' | 'empleados' | 'clientes'>('dashboard');
 
   // Hooks para toast y confirmación
   const { toast, showSuccess, showError, showWarning, hideToast } = useToast();
@@ -85,7 +85,6 @@ function App() {
                       <main className="main-content">
                         {activeSection === 'dashboard' && <DashboardPage />}
                         {activeSection === 'ventas' && <VentasPage />}
-                        {activeSection === 'telefonos' && <ProductosPage accesorio={false} />}
                         {activeSection === 'accesorios' && <ProductosPage accesorio={true} />}
                         {activeSection === 'stock' && <StockPage />}
                         {activeSection === 'promociones' && <PromocionesPage />}

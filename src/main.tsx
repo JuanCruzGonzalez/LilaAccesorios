@@ -11,7 +11,6 @@ import { ClientePage } from './features/tienda/ClientePage.tsx'
 import { ProductoDetallePage } from './features/tienda/ProductoDetallePage.tsx'
 import { TiendaLayout } from './features/tienda/TiendaLayout.tsx'
 import { TiendaProductosPage } from './features/tienda/TiendaProductosPage.tsx'
-import { TiendaTelefonosPage } from './features/tienda/TiendaTelefonosPage.tsx'
 import { TiendaPromocionesPage } from './features/tienda/TiendaPromocionesPage.tsx'
 import { CarritoProvider } from './features/tienda/context/CarritoContext.tsx'
 import { ClienteAuthProvider } from './features/tienda/context/ClienteAuthContext.tsx'
@@ -39,7 +38,6 @@ createRoot(document.getElementById('root')!).render(
               }
             >
               <Route index element={<ClientePage />} />
-              <Route path="telefonos" element={<TiendaTelefonosPage />} />
               <Route path="accesorios" element={<TiendaProductosPage />} />
               <Route path="promociones" element={<TiendaPromocionesPage />} />
               <Route path="producto/:id" element={<ProductoDetallePage />} />

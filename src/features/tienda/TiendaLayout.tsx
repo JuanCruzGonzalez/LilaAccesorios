@@ -67,12 +67,6 @@ export const TiendaLayout: React.FC = () => {
               Inicio
             </Link>
             <Link
-              to="/telefonos"
-              className={`modern-header-nav-link ${isActive('/telefonos') ? 'active' : ''}`}
-            >
-              Teléfonos
-            </Link>
-            <Link
               to="/accesorios"
               className={`modern-header-nav-link ${isActive('/accesorios') ? 'active' : ''}`}
             >
