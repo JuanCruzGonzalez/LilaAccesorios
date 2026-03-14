@@ -29,7 +29,7 @@ export const TiendaTelefonosPage: React.FC = () => {
   const [condicionSeleccionada, setCondicionSeleccionada] = useState<'nuevo' | 'usado_premium' | 'usado' | null>(condicionParam);
 
   useEffect(() => {
-    cargarProductos();
+    cargarProductos(); 
   }, []);
 
   useEffect(() => {
