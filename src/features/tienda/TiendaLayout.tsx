@@ -6,7 +6,7 @@ import { CarritoPanel } from './components/CarritoPanel';
 import { DatosClienteModal } from './components/DatosClienteModal';
 import { ClienteUserMenu } from './components/ClienteUserMenu';
 import { formatPrice } from '../../shared/utils';
-import logo from '../../assets/log.png';
+import logo from '../../../public/LogoLila.jpg';
 import './ClientePage.new.css';
 
 export const TiendaLayout: React.FC = () => {
@@ -54,7 +54,7 @@ export const TiendaLayout: React.FC = () => {
           </button>
           {/* Logo */}
           <div className="modern-header-logo" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
-            <img src={logo} alt="Iphone Store Logo" style={{ width: '100px', height: 'auto' }} />
+            <img src={logo} alt="Iphone Store Logo" />
           </div>
 
 

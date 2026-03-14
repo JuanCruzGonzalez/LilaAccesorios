@@ -4,7 +4,7 @@
 
 /* Variables */
 :root {
-    --primary-color: #0066FF;
+    --primary-color: #9b72a1;
     --secondary-color: #f3f4f6;
     --text-dark: #1f2937;
     --text-gray: #6b7280;
@@ -62,7 +62,7 @@
 }
 
 .modern-header-logo img {
-    width: 90px;
+    width: 70px;
     height: auto;
 }
 
