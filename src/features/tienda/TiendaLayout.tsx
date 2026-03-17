@@ -141,42 +141,18 @@ export const TiendaLayout: React.FC = () => {
               onClick={() => handleNavClick('/')}
               className={`modern-mobile-menu-link ${isActive('/') && !isActive('/telefonos') && !isActive('/accesorios') && !isActive('/promociones') && !isActive('/producto') ? 'active' : ''}`}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                <polyline points="9 22 9 12 15 12 15 22"></polyline>
-              </svg>
               Inicio
-            </button>
-            <button 
-              onClick={() => handleNavClick('/telefonos')}
-              className={`modern-mobile-menu-link ${isActive('/telefonos') ? 'active' : ''}`}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
-                <line x1="12" y1="18" x2="12.01" y2="18"></line>
-              </svg>
-              Teléfonos
             </button>
             <button 
               onClick={() => handleNavClick('/accesorios')}
               className={`modern-mobile-menu-link ${isActive('/accesorios') ? 'active' : ''}`}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="12" y1="8" x2="12" y2="16"></line>
-                <line x1="8" y1="12" x2="16" y2="12"></line>
-              </svg>
               Accesorios
             </button>
             <button 
               onClick={() => handleNavClick('/promociones')}
               className={`modern-mobile-menu-link ${isActive('/promociones') ? 'active' : ''}`}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="9" cy="9" r="2"></circle>
-                <circle cx="15" cy="15" r="2"></circle>
-                <path d="M3 3l18 18M9 15L3 9m18 12l-6-6"></path>
-              </svg>
               Promociones
             </button>
           </nav>

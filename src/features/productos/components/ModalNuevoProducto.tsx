@@ -249,14 +249,6 @@ export const ModalNuevoProducto = React.memo<ModalNuevoProductoProps>(({
             </select>
           </div>
           <div className="form-group">
-            <label>Condición</label>
-            <select value={condicion} onChange={(e) => setCondicion(e.target.value as 'nuevo' | 'usado_premium' | 'usado')}>
-              <option value="nuevo">Nuevo</option>
-              <option value="usado_premium">Usado Premium</option>
-              <option value="usado">Usado</option>
-            </select>
-          </div>
-          <div className="form-group">
             <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
               <input 
                 type="checkbox" 

@@ -18,17 +18,11 @@ export const ProductoCard: React.FC<ProductoCardProps> = ({
   actualizarCantidad,
   manejarAgregarProducto,
   onVerDetalle,
-  categoriasProducto = [],
 }) => {
   const itemEnCarrito = obtenerItemEnCarrito(producto.id_producto!);
 
   return (
     <div className="modern-product-card">
-      {producto.condicion === 'usado' && (
-        <span className="modern-product-badge used">
-          {categoriasProducto.some(c => c.toLowerCase().includes('premium')) ? 'Usado Premium' : 'Usado'}
-        </span>
-      )}
       {producto.promocion_activa && producto.precio_promocion && (
         <span className={`modern-product-badge${producto.condicion === 'usado' ? ' with-used' : ''}`}>Oferta</span>
       )}

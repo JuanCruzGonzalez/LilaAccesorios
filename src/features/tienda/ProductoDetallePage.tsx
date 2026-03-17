@@ -152,18 +152,7 @@ export const ProductoDetallePage: React.FC = () => {
           {/* Info */}
           <div className="pd-info-col">
             <h1 className="pd-title">{producto.nombre}</h1>
-
-            {/* Badges */}
-            <div className="pd-badges">
-              <span className={producto.condicion === 'usado' ? 'pd-badge-used' : 'pd-badge-new'}>
-                {producto.condicion === 'usado'
-                  ? (categoriasProducto.some(c => c.toLowerCase().includes('premium')) ? 'Usado Premium' : 'Usado')
-                  : 'Nuevo'}
-              </span>
-              {producto.promocion_activa && producto.precio_promocion && (
-                <span className="pd-badge-promo">Oferta</span>
-              )}
-            </div>
+            <span>{producto.descripcion} </span>
 
             {/* Precio */}
             <div className="pd-pricing">
@@ -265,14 +254,6 @@ export const ProductoDetallePage: React.FC = () => {
             </div>
           </div>
         </div>
-
-        {/* Descripción debajo */}
-        {producto.descripcion && (
-          <div className="pd-description-card">
-            <h3>Descripción</h3>
-            <p>{producto.descripcion}</p>
-          </div>
-        )}
 
         {/* Productos destacados */}
         {productosDestacados.length > 0 && (

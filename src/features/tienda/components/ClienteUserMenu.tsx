@@ -35,7 +35,7 @@ export const ClienteUserMenu: React.FC = () => {
           display: 'flex',
           alignItems: 'center',
           gap: 6,
-          padding: '7px 14px',
+          padding: '10px 14px',
           borderRadius: 8,
           border: '1px solid #e2e8f0',
           color: '#1e293b',

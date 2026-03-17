@@ -377,6 +377,6 @@
 }
 @media (max-width: 480px) {
   .lila-product-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
   }
 }
