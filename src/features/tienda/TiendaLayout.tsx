@@ -92,7 +92,7 @@ export const TiendaLayout: React.FC = () => {
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
                   const value = (e.target as HTMLInputElement).value;
-                  navigate(`/telefonos${value ? `?q=${encodeURIComponent(value)}` : ''}`);
+                  navigate(`/accesorios${value ? `?q=${encodeURIComponent(value)}` : ''}`);
                 }
               }}
             />
@@ -127,7 +127,7 @@ export const TiendaLayout: React.FC = () => {
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
                 const value = (e.target as HTMLInputElement).value;
-                navigate(`/telefonos${value ? `?q=${encodeURIComponent(value)}` : ''}`);
+                navigate(`/accesorios${value ? `?q=${encodeURIComponent(value)}` : ''}`);
               }
             }}
           />
