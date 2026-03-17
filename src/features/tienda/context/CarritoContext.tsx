@@ -16,6 +16,7 @@ import { formatPrice } from '../../../shared/utils';
 import { createPedido } from '../../pedidos/services/pedidoService';
 import { queryKeys } from '../../../lib/queryClient';
 import { useClienteAuth } from '../context/ClienteAuthContext';
+import { ProductoImagen } from '../../../core/types/';
 
 /**
  * Interfaz para items del carrito
@@ -28,6 +29,7 @@ export interface ItemCarrito {
   descripcion?: string | null; // Descripción del producto/promoción
   precio: number;
   cantidad: number;
+  imagenes?: ProductoImagen[];
 }
 
 /**
@@ -131,6 +133,7 @@ export const CarritoProvider: React.FC<{ children: ReactNode }> = ({ children })
           descripcion: producto.descripcion,
           precio,
           cantidad,
+          imagenes: producto.imagenes,
         }];
       }
     });
