@@ -21,7 +21,6 @@ export const ProductoDetallePage: React.FC = () => {
 
   const [producto, setProducto] = useState<Producto | null>(null);
   const [loading, setLoading] = useState(true);
-  const [categoriasProducto, setCategoriasProducto] = useState<string[]>([]);
 
   const { productosDestacados } = useProductosDestacados(
     producto?.id_producto
@@ -70,23 +69,6 @@ export const ProductoDetallePage: React.FC = () => {
         ...prod,
         imagenes: imagenes || [],
       });
-
-      // Cargar categorías del producto
-      const { data: relCats } = await supabase
-        .from('categoria_producto')
-        .select('id_categoria')
-        .eq('id_producto', idProducto);
-
-      if (relCats && relCats.length > 0) {
-        const catIds = relCats.map((r: any) => r.id_categoria);
-        const { data: cats } = await supabase
-          .from('categoria')
-          .select('nombre')
-          .in('id_categoria', catIds);
-        setCategoriasProducto(cats?.map((c: any) => c.nombre) || []);
-      } else {
-        setCategoriasProducto([]);
-      }
     } catch (error) {
       console.error('Error al cargar producto:', error);
       navigate('/');
