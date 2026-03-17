@@ -76,7 +76,7 @@ export const ClientePage: React.FC = () => {
           <div className="lila-hero-image">
             {productosAccesorios[0]?.imagenes?.[0] ? (
               <img
-                src="./public/PrincipalImg.jpg"
+                src="./PrincipalImg.jpg"
                 alt="Nueva colección Lila"
               />
             ) : (

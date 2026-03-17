@@ -1926,6 +1926,7 @@
 
     .modern-product-name {
         font-size: 12px;
+        min-height: 35px;
     }
 
     .modern-product-stock {
