@@ -224,10 +224,6 @@ export const TiendaProductosPage: React.FC = () => {
               <option value="price-desc">Precio: mayor a menor</option>
               <option value="ofertas">Ofertas primero</option>
             </select>
-
-            <span className="lila-results-count">
-              {productosFiltrados.length} producto{productosFiltrados.length !== 1 ? 's' : ''}
-            </span>
           </div>
         </div>
 
