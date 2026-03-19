@@ -78,7 +78,7 @@ export const ProductoDetallePage: React.FC = () => {
   };
 
   const handleVolver = () => {
-    navigate('/telefonos');
+    navigate('/accesorios');
   };
 
   if (loading) {
@@ -113,9 +113,9 @@ export const ProductoDetallePage: React.FC = () => {
             Volver
           </button>
           <span className="pd-breadcrumb-text">
-            <span onClick={() => navigate('/')} style={{ cursor: 'pointer', color: '#3483fa' }}>Inicio</span>
+            <span onClick={() => navigate('/')} style={{ cursor: 'pointer', color: '#9b6fa3' }}>Inicio</span>
             {' / '}
-            <span onClick={handleVolver} style={{ cursor: 'pointer', color: '#3483fa' }}>Productos</span>
+            <span onClick={handleVolver} style={{ cursor: 'pointer', color: '#9b6fa3' }}>Accesorios</span>
             {' / '}
             {producto.nombre}
           </span>

@@ -70,7 +70,7 @@
 
 .form-group input:focus {
     outline: none;
-    border-color: #2563eb;
+    border-color: #9b6fa3;
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
@@ -81,7 +81,7 @@
 form button[type="submit"] {
     width: 100%;
     padding: 0.625rem 1rem;
-    background: #2563eb;
+    background: #9b6fa3;
     color: white;
     border: none;
     border-radius: 8px;
@@ -93,11 +93,11 @@ form button[type="submit"] {
 }
 
 form button[type="submit"]:hover:not(:disabled) {
-    background: #1d4ed8;
+    background: #9b6fa3;
 }
 
 form button[type="submit"]:active:not(:disabled) {
-    background: #1e40af;
+    background: #9b6fa3;
 }
 
 form button[type="submit"]:disabled {

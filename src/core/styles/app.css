@@ -8,8 +8,8 @@
 }
 
 :root {
-  --color-primary: #2563eb;
-  --color-primary-hover: #1d4ed8;
+  --color-primary: #9b6fa3;
+  --color-primary-hover: #9b6fa3;
   --color-secondary: #64748b;
   --color-success: #10b981;
   --color-warning: #f59e0b;
@@ -244,6 +244,12 @@ input {
   cursor: pointer;
   transition: var(--transition);
 }
+
+.btn-primary {
+  background: var(--color-primary);
+  color: white;
+}
+
 
 .btn-primary {
   background: var(--color-primary);

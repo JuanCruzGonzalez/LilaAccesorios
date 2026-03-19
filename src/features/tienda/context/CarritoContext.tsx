@@ -269,6 +269,7 @@ export const CarritoProvider: React.FC<{ children: ReactNode }> = ({ children })
    */
   const enviarPedidoWhatsApp = useCallback(() => {
     // Abrir modal para capturar datos del cliente
+    toggleMostrarCarrito()
     setModalDatosCliente(true);
   }, []);
 
