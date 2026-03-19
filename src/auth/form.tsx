@@ -14,7 +14,7 @@ export default function LoginForm() {
     useEffect(() => {
         // If user is already logged in, redirect to home
         if (user && !authLoading) {
-            navigate("/administracion/iphonepage", { replace: true });
+            navigate("/administracion/Lila", { replace: true });
         }
     }, [user, authLoading, navigate]);
 
