@@ -16,7 +16,6 @@ export const CarritoPanel: React.FC = () => {
     calcularTotal,
     enviarPedidoWhatsApp,
     cerrarCarrito,
-    obtenerItemEnCarrito,
   } = useCarrito();
   const { isAuthenticated, isLoading: authLoading } = useClienteAuth();
 
