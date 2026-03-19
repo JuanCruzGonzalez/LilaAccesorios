@@ -30,6 +30,7 @@ export interface ItemCarrito {
   precio: number;
   cantidad: number;
   imagenes?: ProductoImagen[];
+  stock: number;
 }
 
 /**
@@ -134,6 +135,7 @@ export const CarritoProvider: React.FC<{ children: ReactNode }> = ({ children })
           precio,
           cantidad,
           imagenes: producto.imagenes,
+          stock: producto.stock,
         }];
       }
     });
@@ -162,6 +164,7 @@ export const CarritoProvider: React.FC<{ children: ReactNode }> = ({ children })
           nombre: promocion.name,
           precio,
           cantidad,
+          stock: 0,
         }];
       }
     });

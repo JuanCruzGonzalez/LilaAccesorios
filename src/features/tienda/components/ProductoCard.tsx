@@ -82,6 +82,7 @@ export const ProductoCard: React.FC<ProductoCardProps> = ({
                   `producto-${producto.id_producto}`,
                   itemEnCarrito.cantidad + 1
                 )}
+                disabled={producto.stock == obtenerItemEnCarrito(producto.id_producto!)!.cantidad}
                 className="modern-quantity-btn">+</button>
             </div>
           ) : (

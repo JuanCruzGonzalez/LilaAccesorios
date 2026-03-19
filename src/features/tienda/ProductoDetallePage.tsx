@@ -188,6 +188,7 @@ export const ProductoDetallePage: React.FC = () => {
                     `producto-${producto.id_producto}`,
                     obtenerItemEnCarrito(producto.id_producto!)!.cantidad + 1
                   )}
+                  disabled={producto.stock == obtenerItemEnCarrito(producto.id_producto!)!.cantidad}
                   className="pd-qty-btn">+</button>
               </div>
             )}

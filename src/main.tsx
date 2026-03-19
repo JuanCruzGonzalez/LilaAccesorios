@@ -52,7 +52,7 @@ createRoot(document.getElementById('root')!).render(
                 }
               />
             </Route>
-            <Route path="/administracion/IphonePage" element={
+            <Route path="/administracion/Lila" element={
               <ProtectedRoute>
                 <App />
               </ProtectedRoute>

@@ -16,13 +16,14 @@ export const CarritoPanel: React.FC = () => {
     calcularTotal,
     enviarPedidoWhatsApp,
     cerrarCarrito,
+    obtenerItemEnCarrito,
   } = useCarrito();
   const { isAuthenticated, isLoading: authLoading } = useClienteAuth();
 
   if (!mostrarCarrito) return null;
 
   const subtotal = calcularTotal;
-  const envio = 'A calcular';
+  // const envio = 'A calcular';
 
   return (
     <div className="cart-overlay">
@@ -87,6 +88,7 @@ export const CarritoPanel: React.FC = () => {
                           <button
                             onClick={() => actualizarCantidad(item.id, item.cantidad + 1)}
                             className="qty-btn"
+                            disabled={(item.stock == item.cantidad)&& item.tipo == 'producto'}
                             aria-label="Aumentar cantidad"
                           >
                             +
