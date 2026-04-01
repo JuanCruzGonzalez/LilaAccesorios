@@ -66,8 +66,7 @@ export const ClientePage: React.FC = () => {
           <div className="lila-hero-content">
             <h1 className="lila-hero-title">Brilla con tu propia luz</h1>
             <p className="lila-hero-desc">
-              Descubre nuestra nueva colección de aros, pulseras y collares
-              diseñados para resaltar tu belleza única cada día.
+              Descubre nuestra nueva colección de aros, pulseras y collares.
             </p>
             <Link to="/accesorios" className="lila-btn lila-btn-primary">
               Explorar Colección

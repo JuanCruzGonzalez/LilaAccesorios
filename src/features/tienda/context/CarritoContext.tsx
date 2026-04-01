@@ -319,8 +319,8 @@ export const CarritoProvider: React.FC<{ children: ReactNode }> = ({ children })
       queryClient.invalidateQueries({ queryKey: queryKeys.pedidosMetricas });
 
       // Generar mensaje de WhatsApp
-      const numeroWhatsApp = '5492615355139';
-      let mensaje = `Hola Iphone Store soy ${datos.nombre}, quería hacer el siguiente pedido:\n\n`;
+      const numeroWhatsApp = '5492616570803';
+      let mensaje = `Hola soy ${datos.nombre}, quería hacer el siguiente pedido:\n\n`;
 
       carrito.forEach(item => {
         const cantidad = item.tipo === 'promocion' ? `${item.cantidad} un` : `${item.cantidad} un`;

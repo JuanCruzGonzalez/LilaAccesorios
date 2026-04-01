@@ -1,6 +1,6 @@
 // api/ventasService.ts
 import { supabase, handleAuthError } from '../../../core/config/supabase';
-import { DetalleVenta } from '../../../core/types';
+import { DetalleVenta, DetalleVentaInput } from '../../../core/types';
 import { getCotizacionActual } from './cotizacionService';
 
 // ============= VENTAS =============
@@ -139,7 +139,7 @@ export async function getVentasPage(
 
 export async function createVenta(
   fecha: string,
-  detalles: any[],
+  detalles: DetalleVentaInput[],
   estado: boolean,
   cotizacion_dolar?: number
 ): Promise<number> {

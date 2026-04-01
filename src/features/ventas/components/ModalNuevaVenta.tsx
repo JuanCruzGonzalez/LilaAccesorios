@@ -8,6 +8,7 @@ import { PromoRow } from './PromoRow';
 import { ProductRow } from './ProductRow';
 import Modal from '../../../shared/components/Modal';
 import { getCotizacionActual } from '../services/cotizacionService';
+import { getDetallePromocion } from '../../promociones/services/promocionService';
 
 interface ModalNuevaVentaProps {
     productos: Producto[];
@@ -24,7 +25,7 @@ export const ModalNuevaVenta = React.memo<ModalNuevaVentaProps>(({
 }) => {
     const { modalNuevaVenta, handleNuevaVenta, crearVentaAsync } = useVentas();
     const [cotizacionDolar, setCotizacionDolar] = useState<number>(1000);
-    const [items, setItems] = useState<{ id_producto: number; cantidad: number; nombre: string; precioventa: number; dolares?: boolean; preciopromocional?: number }[]>([]);
+    const [items, setItems] = useState<{ id_producto: number; cantidad: number; nombre: string; precioventa: number; dolares?: boolean; preciopromocional?: number; preciocosto: number }[]>([]);
     const [productoSeleccionado, setProductoSeleccionado] = useState('');
     const [busquedaProducto, setBusquedaProducto] = useState('');
     const [showProductosDropdown, setShowProductosDropdown] = useState(false);
@@ -35,7 +36,7 @@ export const ModalNuevaVenta = React.memo<ModalNuevaVentaProps>(({
     const [busquedaPromo, setBusquedaPromo] = useState('');
     const [showPromosDropdown, setShowPromosDropdown] = useState(false);
     const [promoCantidad, setPromoCantidad] = useState('1');
-    const [promosAdded, setPromosAdded] = useState<{ id_promocion: number; name: string; precio: number | null; cantidad: number }[]>([]);
+    const [promosAdded, setPromosAdded] = useState<{ id_promocion: number; name: string; precio: number | null; cantidad: number, precio_unitario_costo: number; }[]>([]);
 
     const productSearchRef = useRef<HTMLDivElement>(null);
     const promoSearchRef = useRef<HTMLDivElement>(null);
@@ -186,6 +187,7 @@ export const ModalNuevaVenta = React.memo<ModalNuevaVentaProps>(({
             cantidad: cant,
             nombre: producto.nombre,
             precioventa: producto.precioventa,
+            preciocosto: producto.costo,
             dolares: producto.dolares,
             preciopromocional: producto.precio_promocion || 0,
         }]);
@@ -211,9 +213,9 @@ export const ModalNuevaVenta = React.memo<ModalNuevaVentaProps>(({
             }
         }
 
-        const productosDetalles = items.map(i => ({ id_producto: i.id_producto, cantidad: i.cantidad, precioUnitario: i.precioventa }));
-        const promocionesDetalles = promosAdded.map(p => ({ id_promocion: p.id_promocion, cantidad: p.cantidad, precioUnitario: p.precio ?? undefined }));
-
+        const productosDetalles = items.map(i => ({ id_producto: i.id_producto, cantidad: i.cantidad, precioUnitario: i.precioventa, precio_unitario_costo: i.preciocosto }));
+        const promocionesDetalles = promosAdded.map(p => ({ id_promocion: p.id_promocion, cantidad: p.cantidad, precioUnitario: p.precio ?? undefined, precio_unitario_costo: p.precio_unitario_costo }));
+        
         const pagada = metodoPago !== 'plan_de_pago';
         const planFinal = metodoPago === 'plan_de_pago' && planConfig
             ? { ...planConfig, monto_total: calcularTotales.totalPesos }
@@ -222,7 +224,7 @@ export const ModalNuevaVenta = React.memo<ModalNuevaVentaProps>(({
         resetForm();
     };
 
-    const agregarPromocion = () => {
+    const agregarPromocion = async () => {
         const id = parseInt(promoSeleccionada);
         const cant = parseInt(promoCantidad) || 1;
         if (!id || cant <= 0) {
@@ -235,7 +237,25 @@ export const ModalNuevaVenta = React.memo<ModalNuevaVentaProps>(({
             showWarning?.('Esta promoción ya está agregada');
             return;
         }
-        setPromosAdded(prev => [...prev, { id_promocion: promo.id_promocion, name: promo.name, precio: promo.precio, cantidad: cant }]);
+
+        let costoUnitarioPromocion = 0;
+        try {
+            const detalles = await getDetallePromocion(id);
+            costoUnitarioPromocion = (detalles || []).reduce((total, detalle) => {
+                return total + (Number(detalle.cantidad ?? 0) * Number(detalle.precio_unitario_costo ?? 0));
+            }, 0);
+        } catch (error) {
+            console.error('Error al obtener detalle de promoción:', error);
+            showWarning?.('No se pudo calcular el costo de la promoción. Se usará 0.');
+        }
+
+        setPromosAdded(prev => [...prev, {
+            id_promocion: promo.id_promocion,
+            name: promo.name,
+            precio: promo.precio,
+            cantidad: cant,
+            precio_unitario_costo: costoUnitarioPromocion,
+        }]);
         setPromoSeleccionada('');
         setBusquedaPromo('');
         setPromoCantidad('1');

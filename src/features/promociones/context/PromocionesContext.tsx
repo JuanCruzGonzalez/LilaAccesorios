@@ -192,7 +192,8 @@ export const PromocionesProvider: React.FC<PromocionesProviderProps> = ({
         const detalles = await getDetallePromocion(promocion.id_promocion);
         const productosConCantidad = (detalles || []).map((d: any) => ({ 
           id_producto: d.id_producto, 
-          cantidad: d.cantidad 
+          cantidad: d.cantidad,
+          precio_unitario_costo: d.precio_unitario_costo 
         }));
         setPromocionToEdit({ ...promocion, productos: productosConCantidad });
         modalCrearPromocion.open();

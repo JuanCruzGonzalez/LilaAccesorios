@@ -52,6 +52,7 @@ export interface DetallePromocionConCantidad {
   id_promocion: number;
   id_producto: number;
   cantidad: number;
+  precio_unitario_costo: number;
 }
 
 // Detalle de promoción con información del producto embebida (para vista del cliente)
@@ -72,6 +73,7 @@ export interface PromocionConDetallesCompletos extends Promocion {
 export interface PromocionDetalleInput {
   id_producto: number;
   cantidad: number;
+  precio_unitario_costo: number;
 }
 
 export interface Venta {
@@ -90,6 +92,7 @@ export interface DetalleVenta {
   id_venta: number;
   cantidad: number;
   precio_unitario: number;
+  precio_unitario_costo: number;
   producto?: Producto;
   promocion?: Promocion;
 }
@@ -99,12 +102,14 @@ export interface DetalleVentaProductoInput {
   id_producto: number;
   cantidad: number;
   precioUnitario?: number;
+  precio_unitario_costo: number;
 }
 
 export interface DetalleVentaPromocionInput {
   id_promocion: number;
   cantidad: number;
   precioUnitario?: number | undefined;
+  precio_unitario_costo: number;
 }
 
 export type DetalleVentaInput = DetalleVentaProductoInput | DetalleVentaPromocionInput;

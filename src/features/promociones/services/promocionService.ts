@@ -129,7 +129,7 @@ export async function createPromocion(
     
     return rpcData;
   } catch (e) {
-    // fallback to client-side implementation
+    console.error(e)
   }
 
   const { data: promocion, error: promoError } = await supabase
@@ -169,7 +169,7 @@ export async function createPromocion(
   }
 
   if (Array.isArray(productos) && productos.length > 0) {
-    const detalles = productos.map((p: PromocionDetalleInput) => ({ id_promocion, id_producto: p.id_producto, cantidad: p.cantidad }));
+    const detalles = productos.map((p: PromocionDetalleInput) => ({ id_promocion, id_producto: p.id_producto, cantidad: p.cantidad, precio_unitario_costo: p.precio_unitario_costo }));
     const { error: detallesError } = await supabase.from('detalle_promocion').insert(detalles);
     if (detallesError) {
       console.error('Error al crear detalles de promocion:', detallesError);
@@ -184,7 +184,7 @@ export async function createPromocion(
 export async function getDetallePromocion(id_promocion: number) {
   const { data, error } = await supabase
     .from('detalle_promocion')
-    .select('id_detalle_promocion,id_promocion,id_producto,cantidad')
+    .select('id_detalle_promocion,id_promocion,id_producto,cantidad,precio_unitario_costo')
     .eq('id_promocion', id_promocion);
 
   if (error) {
@@ -290,11 +290,11 @@ export async function updatePromocion(
     const existente = existentesMap.get(p.id_producto);
     if (existente) {
       keepProductoIds.add(p.id_producto);
-      if (existente.cantidad !== p.cantidad) {
-        // update cantidad
+      if (existente.cantidad !== p.cantidad || existente.precio_unitario_costo !== p.precio_unitario_costo) {
+        // update cantidad y costo unitario
         const { error: updErr } = await supabase
           .from('detalle_promocion')
-          .update({ cantidad: p.cantidad })
+          .update({ cantidad: p.cantidad, precio_unitario_costo: p.precio_unitario_costo})
           .eq('id_detalle_promocion', existente.id_detalle_promocion);
         if (updErr) {
           console.error('Error al actualizar detalle promocion:', updErr);
@@ -304,7 +304,14 @@ export async function updatePromocion(
       }
     } else {
       // insert new detalle
-      const { error: insErr } = await supabase.from('detalle_promocion').insert([{ id_promocion, id_producto: p.id_producto, cantidad: p.cantidad }]);
+      const { error: insErr } = await supabase
+        .from('detalle_promocion')
+        .insert([{
+          id_promocion,
+          id_producto: p.id_producto,
+          cantidad: p.cantidad,
+          precio_unitario_costo: p.precio_unitario_costo,
+        }]);
       if (insErr) {
         console.error('Error al insertar detalle promocion nuevo:', insErr);
         await handleAuthError(insErr);

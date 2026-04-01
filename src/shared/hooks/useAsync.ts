@@ -12,6 +12,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 export function useAsync<T>() {
     const mountedRef = useRef(true);
     useEffect(() => {
+        mountedRef.current = true;
         return () => {
             mountedRef.current = false;
         };

@@ -115,7 +115,7 @@ export const calculateMetricsConDolares = (
     for (const detalle of venta.detalle_venta) {
       const qty = detalle.cantidad || 0;
       const price = detalle.precio_unitario || 0;
-      const productCost = detalle.producto?.costo ?? 0;
+      const productCost = detalle.precio_unitario_costo ?? 0;
       const esProductoEnDolares = detalle.producto?.dolares ?? false;
       
       if (esProductoEnDolares) {

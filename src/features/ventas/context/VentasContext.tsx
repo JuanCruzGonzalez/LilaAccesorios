@@ -281,7 +281,6 @@ export const VentasProvider: React.FC<VentasProviderProps> = ({
         if (planConfig && idVenta) {
           await updateVentaMetodoPago(idVenta, 'plan_de_pago');
           try {
-          console.log(planConfig)
             await createPlanDePago({
               id_venta: idVenta,
               id_cliente: planConfig.id_cliente,

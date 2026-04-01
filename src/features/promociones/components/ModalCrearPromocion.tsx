@@ -23,7 +23,7 @@ export const ModalCrearPromocion = React.memo<ModalCrearPromocionProps>(({ produ
   const [name, setName] = useState('');
   const [precio, setPrecio] = useState('');
   // items: productos agregados a la promoción (incluye nombre para mostrar)
-  const [items, setItems] = useState<{ id_producto: number; cantidad: number; nombre?: string }[]>([]);
+  const [items, setItems] = useState<{ id_producto: number; cantidad: number; nombre?: string, precio_unitario_costo: number }[]>([]);
   const [productoSeleccionado, setProductoSeleccionado] = useState<Producto | null>(null);
   const [busquedaProducto, setBusquedaProducto] = useState('');
   const [showProductosDropdown, setShowProductosDropdown] = useState(false);
@@ -52,7 +52,7 @@ export const ModalCrearPromocion = React.memo<ModalCrearPromocionProps>(({ produ
       if (promocionToEdit) {
         setName(promocionToEdit.name ?? '');
         setPrecio(promocionToEdit.precio != null ? String(promocionToEdit.precio) : '');
-        setItems(Array.isArray(promocionToEdit.productos) ? promocionToEdit.productos.map(p => ({ id_producto: p.id_producto, cantidad: p.cantidad, nombre: productos.find(x => x.id_producto === p.id_producto)?.nombre })) : []);
+        setItems(Array.isArray(promocionToEdit.productos) ? promocionToEdit.productos.map(p => ({ id_producto: p.id_producto, cantidad: p.cantidad, nombre: productos.find(x => x.id_producto === p.id_producto)?.nombre, precio_unitario_costo: p.precio_unitario_costo })) : []);
         setEstado(promocionToEdit.estado ? '1' : '2');
       } else {
         // creating new
@@ -171,6 +171,7 @@ export const ModalCrearPromocion = React.memo<ModalCrearPromocionProps>(({ produ
       id_producto: productoSeleccionado.id_producto!,
       cantidad: cant,
       nombre: productoSeleccionado.nombre,
+      precio_unitario_costo: productoSeleccionado.costo,
     }]);
 
     setProductoSeleccionado(null);
@@ -197,7 +198,7 @@ export const ModalCrearPromocion = React.memo<ModalCrearPromocionProps>(({ produ
     const precioNum = precio === '' ? null : (isNaN(Number(precio)) ? null : Number(precio));
 
     handleCrearPromocion(
-      { name: name.trim(), precio: precioNum, productos: items.map(i => ({ id_producto: i.id_producto, cantidad: i.cantidad })), estado: estado === '1' },
+      { name: name.trim(), precio: precioNum, productos: items.map(i => ({ id_producto: i.id_producto, cantidad: i.cantidad, precio_unitario_costo: i.precio_unitario_costo })), estado: estado === '1' },
       imageFile
     );
 
